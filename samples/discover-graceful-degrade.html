@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+	<head>
+		<title>Fibrolamellar.Info | Discover</title>	
+		<meta charset="utf-8">
+		<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+        <link rel="stylesheet" href="css/normalize.min.css">
+        <link rel="stylesheet" href="css/main.css">
+		<link rel="stylesheet" href="css/fibro.css">	
+
+		<style>
+			.title, .description, .tags {
+				width: 100%;
+			}
+			.tags {
+				border-top: #ffffff dotted 1px;
+			}
+
+			select {
+				background-color: #277e43;
+				color: #FFFFFF;
+				margin: 15px 0 0 15%;
+				width: 25%;
+				moz-border-radius:5px;
+		        -webkit-border-radius:5px;
+		        border-radius:5px;
+			}
+
+
+			div.title > span:first-of-type, div.description > span:first-of-type, div.tags > span:first-of-type {
+				font-weight: bold;
+				font-style: italic;
+				
+			}
+
+			#documentsListing {
+				width: 75%;
+				margin: 15px auto 15px 15%;
+				background-color: #25783f;
+				padding: 10px;
+				border: #FFFFFF solid 1px;
+				-moz-border-radius:10px;
+		        -webkit-border-radius:10px;
+		        border-radius:10px;
+			}
+			#documentsListing > div:hover {border: #FFFFFF dotted 1px; }
+
+			.tagsList input[type=submit] {
+				-moz-box-shadow:inset 0px 1px 0px 0px #f4cafc;
+				-webkit-box-shadow:inset 0px 1px 0px 0px #f4cafc;
+				box-shadow:inset 0px 1px 0px 0px #f4cafc;
+				background:-webkit-gradient( linear, left top, left bottom, color-stop(0.05, #eea1fc), color-stop(1, #d441ee) );
+				background:-moz-linear-gradient( center top, #eea1fc 5%, #d441ee 100% );
+				filter:progid:DXImageTransform.Microsoft.gradient(startColorstr='#eea1fc', endColorstr='#d441ee');
+				background-color:#eea1fc;
+				-moz-border-radius:6px;
+				-webkit-border-radius:6px;
+				border-radius:6px;
+				border:1px solid #dd5df4;
+				display:inline;
+				color:#ffffff;
+				font-family:arial;					
+				text-decoration:none;
+				text-shadow:1px 1px 0px #b63dcc;
+				font-size:0.75em;
+				padding:2px 6px;
+				
+			}.tagsList input[type=submit]:hover {
+				background:-webkit-gradient( linear, left top, left bottom, color-stop(0.05, #d441ee), color-stop(1, #eea1fc) );
+				background:-moz-linear-gradient( center top, #d441ee 5%, #eea1fc 100% );
+				filter:progid:DXImageTransform.Microsoft.gradient(startColorstr='#d441ee', endColorstr='#eea1fc');
+				background-color:#d441ee;
+			}.tagsList input[type=submit]:active {
+				position:relative;
+				top:1px;
+			}
+		                    
+		   
+			
+			img {
+				vertical-align: middle;
+				padding: 0 5px 10px 0;
+				width: 50px;
+			}
+			/*
+			body {
+				background-image: url(img/mcslogogreen_50.png);
+				background-repeat: no-repeat;
+				background-position: right bottom;
+			}
+			*/
+			#footer {
+				position: absolute;
+				width: 98%;
+				bottom: 1em;
+				text-align: center;
+				border-top: 1px solid white;
+				margin: 0 auto;
+				padding-top: 0.5em;
+			}
+			#documentsListing a{color: #FFFFFF;}			
+			#documentsListing a:visited{color: #FFFFFF;}
+			#documentsListing a:hover{color: #FFFFFF;}
+			#documentsListing a:active{color: #FFFFFF;}
+		</style>		
+	</head>
+
+	<body>
+		<div id="header"><a href="http://fibrolamellar.info"><img src="img/CircleF.png">fibrolamellar.info | Discover</a></div>
+
+		<div id="main">
+			<p id="form-header">
+				<img class="sectionImg" src="img/files.png"><strong>Instructions: </strong>
+			</p>
+
+			<div>
+				<select id="tagGroupSelect">
+					<option>Show All</option>
+					<option>group1</option>
+					<option>group2</option>
+					<option>group3</option>
+				</select>
+			</div>
+
+			<form id="documentsListing" action="/filter">
+				
+					<div class="group1">
+						<div class="title">
+							<span>Title: </span>
+							<a href="https://www.facebook.com/groups/fibrolamellar/doc/179177632136495/">mon histoire du fibrolamellaire-nicolas Flamerie de Lachapelle</a>
+						</div>
+						<div class="description"></div>
+						<div class="tags">
+							<span>Tags: </span>
+							<div class="tagsList">
+								<input name="filterByTag" type="submit" value="Surgery" />
+								<input name="filterByTag" type="submit" value="Chemo" />
+								<input name="filterByTag" type="submit" value='"Nexavar"/Sorafenib' />
+								<input name="filterByTag" type="submit" value='"Sutent"/Sunitinib' />
+								<input name="filterByTag" type="submit" value='"GEMOX" ("Gemzar"/Gemcitabine + "Eloxatin"/Oxaliplatin)' />
+								<input name="filterByTag" type="submit" value='"Xeloda"/Capecitabine' />
+								<input name="filterByTag" type="submit" value='"Gemzar"/Gemcitabine' />
+								<input name="filterByTag" type="submit" value='Liver Surgery' />
+								<input name="filterByTag" type="submit" value='Surgery to Remove Tumors Outside of the Liver' />
+							</div>
+						</div>
+					</div>
+
+					<div class="group1 group2">
+						<div class="title">
+							<span>Title: </span>
+							<a href="https://www.facebook.com/groups/fibrolamellar/doc/505283909525864/">17 Year FHCC Survivor - Diagnosed Stage IV - 8 lb tumor</a>
+						</div>
+						<div class="description">
+							<span>Description: </span>"Long term survivor
+		Highly recommended surgeon"
+						</div>
+						<div class="tags">
+							<span>Tags: </span>
+							<div class="tagsList">
+								<input name="filterByTag" type="submit" value='Surgery' />
+								<input name="filterByTag" type="submit" value='Chemo' />
+								<input name="filterByTag" type="submit" value='Clinical Trials' />
+							</div>
+						</div>
+					</div>	
+					<div class="group3">
+						<div class="title">
+							<span>Title: </span>
+							<a href="https://www.facebook.com/groups/fibrolamellar/doc/490803154307273/">Derick's Story</a>
+						</div>
+						<div class="description">
+							<span>Description: </span>
+							"75% liver removed
+		5 lymph nodes( two were positive for FHC), 
+		gallbladder removed
+		bile duct reconstruction
+		Metastasis in arm
+		stage 4
+		radiation treatment for arm : few minutes a day, 5 days a week, for 2 weeks"
+						</div>
+						<div class="tags">
+							<span>Tags: </span>
+							<div class="tagsList">
+								<input name="filterByTag" type="submit" value='Surgery' />
+								<input name="filterByTag" type="submit" value='Radiation' />
+								<input name="filterByTag" type="submit" value='Liver Surgery' />	
+							</div>
+						</div>
+					</div>
+				</form>
+			
+			
+		</div>
+		<div id="footer">
+			Got Questions?  Contact:  <a href="mailto:fibrolamellar.info4you@gmail.com">fibrolamellar.info4you@gmail.com</a>
+		</div>
+
+		<script src="js/vendor/jquery-1.9.1.min.js"></script>
+		<script type="text/javascript">
+
+			$(function() {
+				// if keeping this script at the bottom, probably don't need to put this code
+				// in a document.ready jQuery handler
+				$("#tagGroupSelect").on("change", function() {
+					var showGroup = this.value;
+
+					if (showGroup === "Show All") {
+						$("#documentsListing > div").show();
+					}
+					else {
+						$("#documentsListing > div").each(function() {
+							var $this = $(this);
+							if ($this.hasClass(showGroup)) {
+								$this.show();
+							}
+							else {
+								$this.hide();
+							}
+						})						
+					}
+				});
+			});
+
+		</script>
+	</body>
+</html>	

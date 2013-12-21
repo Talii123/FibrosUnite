@@ -1,0 +1,95 @@
+@media only screen and (width: 320px) and (height: 480px) {
+  #threeFour {
+  	background-color: yellow;
+  	font-weight: bold;
+  	color: red;
+  }
+}	
+
+@media only screen and (width: 480px) and (height: 320px) {
+  #fourThree {
+  	background-color: yellow;
+  	font-weight: bold;
+  	color: red;
+  }
+}
+
+@media only screen and (width: 600px) and (height: 800px) {
+  #sixEight {
+  	background-color: yellow;
+  	font-weight: bold;
+  	color: red;
+  }
+}
+
+@media only screen and (width: 800px) and (height: 600px) {
+  #eightSix {
+  	background-color: yellow;
+  	font-weight: bold;
+  	color: red;
+  }
+}	
+
+@media only screen and (width: 768px) and (height: 1024px) {
+  #sevenTen {
+  	background-color: yellow;
+  	font-weight: bold;
+  	color: red;
+  }
+}
+
+@media only screen and (width: 1024px) and (height: 768px) {
+  #tenSeven {
+  	background-color: yellow;
+  	font-weight: bold;
+  	color: red;
+  }
+}														
+
+@media only screen and (width: 320px) {
+  #three {
+  	background-color: yellow;
+  	font-weight: bold;
+  	color: red;
+  }
+}	
+
+@media only screen and (width: 480px) {
+  #four {
+  	background-color: yellow;
+  	font-weight: bold;
+  	color: red;
+  }
+}
+
+@media only screen and (width: 600px) {
+  #six {
+  	background-color: yellow;
+  	font-weight: bold;
+  	color: red;
+  }
+}
+
+@media only screen and (width: 800px) {
+  #eight {
+  	background-color: yellow;
+  	font-weight: bold;
+  	color: red;
+  }
+}	
+
+@media only screen and (width: 768px) {
+  #seven {
+  	background-color: yellow;
+  	font-weight: bold;
+  	color: red;
+  }
+}
+
+@media only screen and (width: 1024px) {
+  #ten {
+  	background-color: yellow;
+  	font-weight: bold;
+  	color: red;
+  }
+}														

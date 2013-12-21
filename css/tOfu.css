@@ -1,0 +1,22 @@
+/*==|== tOfu ====*/
+/**************************************/
+/**************************************************************/
+/* TERMS OF USE PAGE */
+/**************************************************************/
+.toc {
+  font-family: "HelveticaNeue-Light", "Helvetica Neue Light", "Helvetica Neue", Helvetica, Arial;
+  font-style: italic;
+  width: 70%;
+  display: block;
+  margin: 50px auto;
+  padding: 50px;
+  padding-bottom: 60px;
+  background-color: #04452F; 
+  -moz-border-radius: 45px;
+  border-radius: 45px;
+  border: #04452F solid 2px;
+}
+.toc strong {
+  text-decoration: underline;
+  font-size: 20px;
+}

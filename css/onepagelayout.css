@@ -1,0 +1,47 @@
+
+body {
+  height: 93%;
+  width: 97%;
+  margin: 0 auto;
+}
+
+iframe {
+  margin: 4em auto 0;
+  height: 36.3em;
+}
+
+#header {
+  width: 95%;
+  /*height: 7%;*/
+  height: 1.2em;
+  margin: 0 auto;
+  position: fixed;
+  z-index: 10000;
+  background: url("../img/back.png") repeat scroll 0 0 #3F6A3C; 
+  /*top: 0.2em;*/
+  top: 0;
+  padding-top: 0.2em;
+}
+#main, #sidebar {
+  /*margin-bottom: 0;
+  margin-top: 5%;*/
+  margin-top: 4em;
+  margin-bottom: 2.5em;
+}
+#main {
+  position: relative;
+  height: 87%;
+  overflow-y: auto;
+}
+
+#footer {
+  width: 95%;
+  margin: 0.8em auto 0;
+  position: fixed;
+  bottom: 0;
+  padding-bottom: 0.8em;
+  background: url("../img/back.png") repeat scroll 0 0 #3F6A3C;
+
+}
+
+

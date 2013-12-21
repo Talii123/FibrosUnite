@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+	<head>
+		<title>Barber!</title>
+		<meta charset="utf-8">
+	</head>
+	<body>
+		<h1>The Barber!!</h1>
+
+		<textarea id="result" rows="20" cols="140"></textarea>
+
+		<!--<script type="text/javascript" src="Tags2.js"></script>-->
+		<script type="text/javascript" src="sampleAllJSON.js"></script>
+		<script type="text/javascript" src="js/vendor/jquery-1.9.1.min.js"></script>
+		<script type="text/javascript" src="js/vendor/mustache.js"></script>
+		<script id="level1tmpl" type="text/x-mustache">
+			<div id="sidebar">
+				{{#level1}}				
+					<ul id="{{id}}" class="level1">
+						<div>{{name}}</div>					
+						{{#name}}
+							<li><label><input type="checkbox"/>{{name}}</label></li>
+							
+							{{>level2}}								
+						{{/name}}								
+						{{^name}}
+							<li><label><input type="checkbox"/>{{.}}</label></li>
+						{{/name}}				
+					</ul>
+				{{/level1}}				
+			</div>
+		</script>		
+		<script id="level2tmpl" type="text/x-mustache">
+			{{#level2}}				
+				<li>
+					<ul id="{{id}}" class="level2">
+						{{#name}}
+							<div>{{name}}</div>			
+
+							<li><label><input type="checkbox"/>{{name}}</label></li>
+					
+							{{>level3}}	
+						{{/name}}								
+						{{^name}}
+							<li><label><input type="checkbox"/>{{.}}</label></li>
+						{{/name}}
+					</ul>
+				</li>
+			{{/level2}}				
+		</script>
+		<script id="level3tmpl" type="text/x-mustache">
+			{{#level3}}
+				<li><label><input type="checkbox"/>{{.}}</label></li>
+			{{/level3}}
+		</script>	
+
+		<script id="sidebarTmpl" type="text/x-mustache">
+			<div id="sidebar">
+				<ul class="categories">
+					{{#categories}}
+						<li>
+							<div class="category">
+								<h1>{{name}}</h1>
+								{{#tagGroups}}
+									<div id="{{id}}" class="tagGroup">
+									<h2>{{name}}</h2>
+									<ul class="tagGroup">
+										<li>
+											<div class="tags">
+												<ul>
+													{{#tags}}
+														<li><label>{{.}}<input type="checkbox"/></label></li>
+													{{/tags}}
+												</ul>
+											</div>
+										</li>
+									</ul>
+									</div>
+								{{/tagGroups}}
+								{{^tagGroups}}
+									<ul class="tags">
+										{{#tags}}
+											<li><label>{{.}}<input type="checkbox"/></label></li>
+										{{/tags}}
+
+									</ul>
+								{{/tagGroups}}
+							</div>
+						</li>
+					{{/categories}}
+				</ul>
+			</div>
+		</script>			
+
+		<script id="docListTmpl" type="text/x-mustache">
+			<form id="documentsListing" action="/filter">
+				{{#entry}}
+					<div class="entry">
+						<div class="title">
+							<h2>
+								<span>Title: </span>
+								<a href="{{& Link}}">{{Title}}</a>
+							</h2>
+						</div>
+						
+						<div class="description"><span>Description: </span>{{Description}}</div>
+
+						<div class="tags">
+							<span>Tags: </span>
+							<div class="tagsList">
+								{{#Tags}}
+									<input name="filterByTag" type="submit" value="{{.}}" />
+								{{/Tags}}
+							</div>
+						</div>
+					</div>
+				{{/entry}}
+			</form>
+		</script>	
+
+		<script>
+			function addIds(data) {
+				var i;
+				if (data.name) {
+					data.id = data.name.replace(/\s+/g, "_");
+					if (data.tagGroups) {
+						addIds(data.tagGroups);
+					}
+					else if (data.tags) {
+						addIds(data.tags);
+					}
+				}
+				if (typeof data !== "string" && data.length > 0) {
+					for (i=0; i < data.length; ++i) {
+						addIds(data[i]);
+					}
+				}
+			}
+
+			var data = getJSONdata();
+
+			console.log("data: ");
+			console.dir(data);
+			/*addIds(data.categories);
+			console.log("augmented data: ");
+			console.dir(data);			
+
+			var tmpl = $("#sidebarTmpl").html().trim(); //$("#level1tmpl").html().trim();
+			var lvl2Tmpl = $("#level2tmpl").html().trim();
+			var lvl3Tmpl = $("#level3tmpl").html().trim();*;
+			var mustachioed = Mustache.render(tmpl, data, {
+				level2 : lvl2Tmpl, 
+				level3 : lvl3Tmpl
+			});//.replace(/\s{4,}/g, "    ");*/
+
+			var tmpl = $("#docListTmpl").html().trim();
+			var mustachioed = Mustache.render(tmpl, data);
+
+
+			console.log("tmpl: ", tmpl);
+			console.log("mustachioed: ", mustachioed);
+
+			$("#result").text(mustachioed.replace(/<br\/>/g, "\n").trim());
+		</script>
+
+	</body>
+</html>
+

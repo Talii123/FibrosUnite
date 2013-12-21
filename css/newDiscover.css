@@ -1,0 +1,57 @@
+body {
+  height: 96%;
+}
+#header {
+  position: absolute;
+  height: 6%;
+  margin: 0 0 2em 0;
+}
+#main, #sidebar {
+  margin-top: 5%;
+  margin-bottom: 2%;
+}
+#main {
+  position: absolute;
+  height: 82%;
+  overflow-y: scroll;
+}
+
+#footer {
+  position: absolute;
+  height: 2% !important;
+  bottom: 1.5em;
+}
+
+
+@media only screen and (max-height: 480px) {
+  #header {
+    height: 6.5%;
+  }
+  #footer {
+    height: 3%;
+  }
+  #main, #sidebar {
+    margin-top: 8%;
+  }  
+}
+
+@media only screen and (max-height: 320px) {
+  #header {
+    height: 20%;
+  }
+  #footer {
+    height: 4%;
+  }
+  #main, #sidebar {
+    margin-top: 22%;
+  }
+}
+
+@media only screen and (max-width: 768px) {
+  #sidebar {
+    display: none;
+  }
+  #main {
+    margin-left: 0;
+  }
+}

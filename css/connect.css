@@ -1,0 +1,41 @@
+/*==|== connect ====*/
+/***************************************************************/
+.sectionImg {
+  height: 60px;
+  padding: 10px 15px;
+  float: left;
+}
+iframe{
+  padding: 0;
+  height: 87%; /* 520px;
+  width: 600px; 
+  margin: 40px auto;
+  overflow-y: scroll;  
+  */
+  display: block;
+  border: 20px #04452F solid;
+  -moz-border-radius: 15px;
+  border-radius: 15px;
+  overflow: scroll;
+  overflow-x: hidden;
+  
+}
+
+p.text { display: none;} /* Hide the instruction well */
+
+.text {
+  font-family: "HelveticaNeue-Light", "Helvetica Neue Light", "Helvetica Neue", Helvetica, Arial;
+  font-style: italic;
+  width: 85%;
+  display: block;
+  margin: 20px auto;
+  padding: 5px 20px 5px 10px;
+  /* border-bottom: #ffffff dashed 1px; */
+  min-height: 70px;
+  background-color: #04452F; 
+  -moz-border-radius: 15px;
+  border-radius: 15px;
+  border: #04452F solid 2px;
+}
+/**************************************************************/
+/* DISCOVER PAGE */

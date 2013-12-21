@@ -1,0 +1,113 @@
+/*@media only screen and (min-width: 800px){
+
+  #main {
+    height: 81%
+  }
+  #main, #sidebar {
+    margin-top: 7%;
+  }  
+}*/
+
+@media only screen and (min-width: 800px) and (max-width: 1000px){
+  #header {
+    height: 10%;
+    top: 1%;
+  }
+  #main {
+    height: 81%
+  }
+
+}
+
+@media only screen and (max-width: 799px){
+  #sidebar {
+    display: none;
+  }
+}
+
+/*@media only screen and (max-width: 599px) and (min-width: 481px) {
+  #header {
+    padding-bottom: 10px;
+  }
+}*/
+
+@media only screen and (max-width: 799px) and (min-width: 481px) {
+  #header {
+    height: 10%;
+    top: 1%;
+  }
+  #header {
+    padding-bottom: 0;
+    margin: 1% auto;
+    top: 0;
+  }
+  #main {
+    height: 85%;
+    margin: 10% 0 2%;
+    /*margin-left: 0;*/
+  }
+}
+
+
+@media only screen and (max-width: 480px) {
+  body {
+    /*width: 97%;*/
+    height: 94%;
+    padding: 6px;    
+  }
+  #header {
+    height: 18%;
+    top: 0;
+  }
+  #main {
+    height: 60%;
+    margin: 12% 0 0;
+    width: 100%;
+  }
+  .entry {
+    /*margin-right: 3%;*/
+
+    margin-right: 2%;
+    overflow-x: hidden;
+  }
+  #footer {
+    position: static;
+    height: 2%;
+    border: none;
+    font-size: 0.8em;
+    padding: 0;
+    /*bottom: 1.5em;*/
+  }
+}
+
+
+@media only screen and (max-width: 320px) {
+  body {
+    width: 96%;
+    height: 94%;
+    padding: 6px;    
+  }
+  #header {
+    height: 12%;
+    padding-bottom: 8px;
+    /* same as for wider surfaces
+    top: 0;
+        */
+  }
+  #main {
+    height: 81%;
+    margin: 18% 0 0;
+    width: 100%;
+  }
+  .entry {
+    /*margin-right: 2%;
+    overflow-x: hidden; */
+  }
+  #footer {
+    position: static;
+    height: 2%;
+    font-size: 0.57em;
+    white-space: nowrap;
+    /*bottom: 1.5em;*/
+  }
+}

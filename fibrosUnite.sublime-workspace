@@ -1,0 +1,342 @@
+{
+	"auto_complete":
+	{
+		"selected_items":
+		[
+			[
+				"font",
+				"font-size"
+			],
+			[
+				"rem",
+				"removeEmail"
+			],
+			[
+				"de",
+				"designedByDialog"
+			],
+			[
+				"min",
+				"min-width"
+			],
+			[
+				"max",
+				"max-height"
+			],
+			[
+				"about",
+				"aboutDialog"
+			],
+			[
+				"but",
+				"buttons"
+			],
+			[
+				"show",
+				"showControls"
+			],
+			[
+				"sta",
+				"startTour"
+			],
+			[
+				"rest",
+				"restartTour"
+			],
+			[
+				"sho",
+				"showControls"
+			],
+			[
+				"crea",
+				"createControls"
+			],
+			[
+				"mar",
+				"margin-left"
+			],
+			[
+				"bac",
+				"background-color"
+			],
+			[
+				"fo",
+				"font-family"
+			],
+			[
+				"fon",
+				"font-size"
+			],
+			[
+				"ma",
+				"max-width"
+			],
+			[
+				"pad",
+				"padding"
+			],
+			[
+				"bor",
+				"border-bottom"
+			],
+			[
+				"padd",
+				"padding-top"
+			],
+			[
+				"margi",
+				"margin-left"
+			],
+			[
+				"tour",
+				"tourcontrols"
+			],
+			[
+				"ret",
+				"returnValue"
+			],
+			[
+				"parse",
+				"parseIso8601DateTime"
+			],
+			[
+				"edit",
+				"editDiv"
+			],
+			[
+				"di",
+				"editDiv"
+			],
+			[
+				"toggle",
+				"toggleAddEdit"
+			],
+			[
+				"add",
+				"addDiv"
+			],
+			[
+				"fun",
+				"function"
+			],
+			[
+				"margin",
+				"margin-top"
+			],
+			[
+				"li",
+				"link	Tag"
+			],
+			[
+				"in",
+				"input	Tag"
+			],
+			[
+				"barBox",
+				"barBoxContainer"
+			],
+			[
+				"back",
+				"background	background-color: name"
+			],
+			[
+				"backgr",
+				"background	background-color: name"
+			]
+		]
+	},
+	"buffers":
+	[
+	],
+	"build_system": "",
+	"command_palette":
+	{
+		"height": 0.0,
+		"selected_items":
+		[
+		],
+		"width": 0.0
+	},
+	"console":
+	{
+		"height": 0.0
+	},
+	"distraction_free":
+	{
+		"menu_visible": true,
+		"show_minimap": false,
+		"show_open_files": false,
+		"show_tabs": false,
+		"side_bar_visible": false,
+		"status_bar_visible": false
+	},
+	"file_history":
+	[
+		"/Users/Talii/Dropbox/handlebars.js",
+		"/Users/Talii/Dropbox/MyFibroCancerStoryJavaClient/src/test/friedman/tal/mfs/timelines/ViewTimelines.feature",
+		"/Users/Talii/Dropbox/MyFibroCancerStoryJavaClient/src/test/friedman/tal/mfs/events/hello_world.feature",
+		"/Users/Talii/Downloads/reerrorpage/error.html",
+		"/Users/Talii/Google Drive/Fibrolamellar Stuff/User Stories Document",
+		"/Users/Talii/Google Drive/Fibrolamellar Stuff/Notes from Chat with Neil and Nancy",
+		"/Users/Talii/Google Drive/Fibrolamellar Stuff/FCF Stuff",
+		"/Users/Talii/Google Drive/Fibrolamellar Stuff/SandyPrep.txt",
+		"/Users/Talii/Downloads/imageTest/imageTest.html",
+		"/Users/Talii/Google Drive/Fibrolamellar Stuff/John Tips",
+		"/Users/Talii/Google Drive/Fibrolamellar Stuff/Sandy Meeting Objectives",
+		"/Users/Talii/Google Drive/FCF Patient Registry Mess",
+		"/Users/Talii/Google Drive/untitled",
+		"/Users/Talii/Google Drive/Of Mice and Manuscripts",
+		"/Users/Talii/Google Drive/Rental Contact Email Msgs",
+		"/Users/Talii/Dropbox/Clean/js/recipeCreator.js",
+		"/Users/Talii/Desktop/test.js",
+		"/Users/Talii/Desktop/Lyrics of USS song KIT",
+		"/Users/Talii/Dropbox/Cloud Documents/Hey Jo,",
+		"/Users/Talii/Dropbox/Cloud Documents/Naomi Walk",
+		"/Users/Talii/Dropbox/Cloud Documents/A Sandy Original Draft",
+		"/Users/Talii/Dropbox/Cloud Documents/Latency Improvements for MFC",
+		"/Users/Talii/Downloads/WebsiteTour/js/jquery.easing.1.3.js",
+		"/Users/Talii/Dropbox/EatShareLive/js/user.js",
+		"/Users/Talii/Dropbox/EatShareLive/static/DemoStatic.html",
+		"/Users/Talii/Dropbox/EatShareLive/war/DemoStatic.html",
+		"/Users/Talii/Dropbox/My Timeline/war/timeline.js",
+		"/Users/Talii/Dropbox/cancer timelines/TuckerTimeline.html",
+		"/Users/Talii/Dropbox/FutureLab2012/futurelab.html",
+		"/Users/Talii/Documents/Patient Portal Strategy",
+		"/Users/Talii/Documents/These Are My Scars Strategy",
+		"/Users/Talii/Dropbox/Future Lab 2012/futurelab2.js",
+		"/Users/Talii/Dropbox/Future Lab 2012/common.css",
+		"/Users/Talii/Dropbox/Future Lab 2012/futurelab2.css",
+		"/Users/Talii/Documents/Treatment Options for FCF",
+		"/Users/Talii/Dropbox/Future Lab 2012/futurelab_backup.html",
+		"/Users/Talii/Dropbox/Future Lab 2012/futurelab2.html",
+		"/Users/Talii/Dropbox/Future Lab 2012/futurelab.html",
+		"/Users/Talii/Dropbox/SOPA Emergency IP list:"
+	],
+	"find":
+	{
+		"height": 37.0
+	},
+	"find_in_files":
+	{
+		"height": 0.0,
+		"where_history":
+		[
+		]
+	},
+	"find_state":
+	{
+		"case_sensitive": false,
+		"find_history":
+		[
+			"setUnitToCustom",
+			"tour_",
+			"tour",
+			"\ntour_",
+			"\ntour",
+			"\ntour_1",
+			"tour_1",
+			"Thanks",
+			"$elem",
+			"jquery",
+			"showOverlay",
+			"overlay",
+			"font",
+			"body",
+			"center",
+			"tour_3",
+			"tooltip",
+			"dialog",
+			"tour_2",
+			"tour_1",
+			"tour_2",
+			"tour_1",
+			"doLoadSampleEvents",
+			"clear",
+			".css",
+			"../",
+			"toggleAddEdit",
+			"testAddEvent",
+			"demo",
+			"style",
+			"events.json"
+		],
+		"highlight": true,
+		"in_selection": false,
+		"preserve_case": false,
+		"regex": false,
+		"replace_history":
+		[
+		],
+		"reverse": false,
+		"show_context": true,
+		"use_buffer2": true,
+		"whole_word": false,
+		"wrap": true
+	},
+	"groups":
+	[
+		{
+			"sheets":
+			[
+			]
+		}
+	],
+	"incremental_find":
+	{
+		"height": 38.0
+	},
+	"input":
+	{
+		"height": 0.0
+	},
+	"layout":
+	{
+		"cells":
+		[
+			[
+				0,
+				0,
+				1,
+				1
+			]
+		],
+		"cols":
+		[
+			0.0,
+			1.0
+		],
+		"rows":
+		[
+			0.0,
+			1.0
+		]
+	},
+	"menu_visible": true,
+	"replace":
+	{
+		"height": 0.0
+	},
+	"save_all_on_build": true,
+	"select_file":
+	{
+		"height": 0.0,
+		"selected_items":
+		[
+		],
+		"width": 0.0
+	},
+	"select_project":
+	{
+		"height": 0.0,
+		"selected_items":
+		[
+		],
+		"width": 0.0
+	},
+	"show_minimap": true,
+	"show_open_files": false,
+	"show_tabs": true,
+	"side_bar_visible": true,
+	"side_bar_width": 293.0,
+	"status_bar_visible": true
+}

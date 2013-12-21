@@ -1,0 +1,217 @@
+/*==|== discover ====*/
+/**************************************************************/
+#loadingDiv {
+        display:none; 
+        position: absolute; 
+        top: 50%; 
+        margin: 0 auto; 
+        left: 50%; 
+        background-color: blue; 
+        color: white;
+}
+.title, .description, .tags {
+  width: 100%;
+  font-size: 1em;
+  padding: 0 0 0.3em; 
+  float: none;
+}
+img {
+  vertical-align: middle;
+  padding: 0 5px 10px 0;
+  width: 50px;
+}
+div.title > h2 {
+  margin: 0;
+  font-size: inherit;
+}
+div.title > h2 > a {
+  font-size: inherit;
+}
+div.title > h2 > span:first-of-type, div.description > h2 > span:first-of-type, div.tags > h2 > span:first-of-type {
+  font-weight: bold;
+  font-style: italic;
+  color: #D0CE6A;  
+}
+div.title > span:first-of-type, div.description > span:first-of-type, div.tags > span:first-of-type {
+  font-weight: bold;
+  font-style: italic;
+  color: #D0CE6A;
+}
+#documentsListing > div {
+  padding: 10px 10px 5px 10px;
+  margin: 0 1em 0.5em 0;
+  background-color: #04452F; 
+  -moz-border-radius: 15px;
+  border-radius: 15px;
+  border: #04452F solid 2px;
+}
+#documentsListing > div:hover {
+  border: #e6918c solid 2px;
+  /* OPACITY OF ENTIRE DOCUMENT BOX ON HOVER
+  -webkit-opacity: 0.6;
+  -moz-opacity: 0.6;
+  filter:alpha(opacity=60);
+  */
+}
+#documentsListing .title, #documentsListing .description {
+  line-height: 1.2em;
+  font-size: 1.2em;
+}
+#documentsListing .title {
+  border-bottom: #ffffff dotted 1px;
+  margin-bottom: 3px;
+  padding-bottom: 3px;
+}
+#documentsListing .description, #documentsListing .tags {
+  line-height: 1.3em;
+  font-size: 0.9em;
+}
+.tagsList input[type=submit] {
+  background-color: #7D9C59;
+  -moz-border-radius: 10px;
+  -webkit-border-radius:10px;
+  border-radius:10px;
+  border: #7D9C59 solid 1px;
+  display: inline;
+  color: #04452F;         
+  text-decoration:none;
+  font-size:0.8em;
+  padding: 1px 4px; 
+  margin-right: 5px;
+  margin-bottom: 5px;
+  cursor: default;
+}
+.tagsList input[type=submit]:hover {
+  background-color: #e6918c;
+  color: #FFFFFF;
+  border: #e6918c solid 1px;
+  cursor: pointer;
+}
+.tagsList {
+  display: inline;
+}
+#documentsListing a{color: #FFFFFF;text-decoration: none;}      
+#documentsListing a:visited{color: #FFFFFF;}
+#documentsListing a:hover{color: #e6918c;}
+#documentsListing a:active{color: #e6918c;}
+#sidebar {
+  float:left;
+  padding: 10px 10px;
+  width: 14em;
+  background-color: #04452F; 
+  -moz-border-radius: 15px;
+  border-radius: 15px;
+  font-size: inherit;
+  
+}
+#sidebar ul {
+  margin: 0;
+  padding: 0;
+}
+#sidebar h1 {
+  font-size: 1.2em;
+  border-bottom: #D0CE6A dotted 1px;
+  margin: 5px;
+  color: #D0CE6A;
+}
+#sidebar h2 {
+  font-size: 1em;
+  font-style: italic;
+  margin: 5px;
+  color: #D0CE6A;
+}
+#sidebar li {
+  list-style-type: none;
+  font-size: 0.9em;
+}
+#sidebar li label {
+  padding: 0 0.5em;
+}
+#sidebar .tags li:hover {
+  background-color: #e6918c;
+  -moz-border-radius: 5px;
+  border-radius: 5px;
+  
+}
+#sidebar ul .tags label{
+  font-weight: normal;
+}
+#sidebar input {
+  margin-right: 5px;
+}
+.tags input[type=checkbox] {
+  float: right;
+  margin: 0.22em 0.3em 0;
+}
+#sidebar .allToggle {
+  margin-left: 10px;
+  color: #FFFFFF;         
+  text-decoration:none;
+  font-weight: normal;
+  font-size: 11px;
+}
+#sidebar .allToggle:hover {
+  text-decoration: underline;
+  cursor: pointer;
+}
+#sidebar .onlyToggle {
+  float: right;
+  display: none;
+  color: #FFFFFF;         
+  text-decoration:none;
+  font-size: 11px;
+}
+#sidebar h2:hover .onlyToggle {
+  display: inline;
+}
+#sidebar .tags li:hover .onlyToggle {
+  display: inline;
+}
+#sidebar .tags li .onlyToggle:hover {
+  text-decoration: underline;
+  cursor: pointer;
+}
+#sidebar .tags label {
+  clear: both;
+}
+#main {
+  margin: 0 -0.8em 0 16em;
+}
+#footer {
+  width: 98%;
+  bottom: 1em;
+  text-align: center;
+  border-top: 1px solid white;
+  margin: 0 auto;
+  padding-top: 0.5em;
+  clear: both;
+}
+/* For the dropdown categoy selection and tag system */
+#sidebar {
+  padding-bottom: 20px;
+}
+#sidebar > span {
+  font-weight: bold;
+  font-style: italic;
+  color: #D0CE6A;
+}
+#sidebar > select {
+  /* White on Dark Green
+  background-color: #04452F;
+  color: #FFFFFF; */
+  background-color: #7D9C59;
+  color: #04452F;
+  width: 100%;
+}
+div#appliedTags > span {
+  color: #D0CE6A;
+  font-weight: bold;
+  font-style: italic;
+}
+.tagFilter {
+  display: block;
+}
+.tagsList input.selected {
+  background-color: #e6918c;
+  border: 1px #e6918c solid;
+}

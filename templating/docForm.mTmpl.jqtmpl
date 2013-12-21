@@ -1,0 +1,25 @@
+			
+<form id="documentsListing" action="/filter">
+	{{#entry}}
+		<div class="entry">
+			<div class="title">
+				<h2>
+					<span>Title: </span>
+					<a href="{{link}}">{{title}}</a>
+				</h2>
+			</div>
+			
+			<div class="description"><span>Description: </span>{{description}}</div>
+
+			<div class="tags">
+				<span>Tags: </span>
+				<div class="tagsList">
+					{{#tag}}
+						<input name="filterByTag" type="submit" value="{{.}}" />
+					{{/tag}}
+				</div>
+			</div>
+		</div>
+	{{/entry}}
+</form>
+				

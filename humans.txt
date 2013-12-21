@@ -1,0 +1,17 @@
+# humanstxt.org/
+# The humans responsible & technology colophon
+
+# TEAM
+
+    Tal Friedman	-- 	  	Creator, Developer
+    Steve Sokalsky	--		Web Designer
+
+# THANKS
+
+    Stefan Popowicz
+    Pablo
+
+# TECHNOLOGY COLOPHON
+
+    HTML5, CSS3
+    jQuery, Modernizr
