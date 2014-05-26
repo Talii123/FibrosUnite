@@ -312,26 +312,31 @@
 		});
 		numRequiredTags = requiredTags.length;		
 
-		console.log("entries: ", $(".entry", $docsList));
-		$docsList.find(".entry").each(function() {
-			var hasAllRequiredTags = true,
-				i,
-				$this = $(this),
-				myTags = [];
+		if (numRequiredTags > 0) {
+			console.log("entries: ", $(".entry", $docsList));
+			$docsList.find(".entry").each(function() {
+				var hasAllRequiredTags = true,
+					i,
+					$this = $(this),
+					myTags = [];
 
-			$(".tagsList input[name='filterByTag']", $this).each(function() {
-				myTags.push(this.value);
-			});
+				$(".tagsList input[name='filterByTag']", $this).each(function() {
+					myTags.push(this.value);
+				});
 
+				for (i=0; i < numRequiredTags && hasAllRequiredTags; ++i) {
+					hasAllRequiredTags &= (myTags.indexOf(requiredTags[i]) >= 0);
+				}
 
-			for (i=0; i < numRequiredTags && hasAllRequiredTags; ++i) {
-				hasAllRequiredTags &= (myTags.indexOf(requiredTags[i]) >= 0);
-			}
-
-			if (hasAllRequiredTags) {
-				$this.show();
-			}
-		});
+				if (hasAllRequiredTags) {
+					$this.show();
+				}
+			});			
+		}
+		else {
+			$("#appliedTags .tagsList").hide();
+			$docsList.find(".entry").each(function() {$(this).show()});
+		}
 
 
 		rebuildTagSelector();
@@ -351,7 +356,7 @@
 		$matchedTags.addClass("selected");
 
 		// update LHN
-		$("#appliedTags .tagsList").append($("<span class='tagFilter'></span>").html(aTagName+" | <input type='submit' name='removeTagFilter' value='x'/>").data("tagName", aTagName));
+		$("#appliedTags .tagsList").show().append($("<span class='tagFilter'></span>").html(aTagName+" | <input type='submit' name='removeTagFilter' value='x'/>").data("tagName", aTagName));
 
 		
 //		console.log("$matchedTags: ", $matchedTags);
@@ -542,9 +547,9 @@
 				console.log("tagToSelect: ", tagToSelect);
 				selectTag(tagToSelect);			
 			})
-			.insertAfter("#appliedTags")
-			.before($(f_createTagSelectorHTML()).attr({"id" : ADD_TAG_FILTER_SELECTOR_ID}));
-
+			.insertBefore("#appliedTags .tagsList")
+			.before($(f_createTagSelectorHTML()).attr({"id" : ADD_TAG_FILTER_SELECTOR_ID}))
+			.after("<br/>");
 		$(".helpLink").on("click", function($event) {
 			$event.preventDefault();
 			$("#helpText").slideToggle();
