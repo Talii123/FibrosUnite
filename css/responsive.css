@@ -9,13 +9,39 @@
 
 
 @media only screen and (max-width: 320px) {
-	#domain {
-		display: none;
-	}
+	#domain { display: none; }
 	#header {
 		font-size: 1.95em !important;
 		padding-bottom: 15px !important;
 	}
+	#footer .smallContact { display: inline; }
+	#footer .feedback { 
+		display: inline;
+		margin-right: 1em; 
+	}
+	#footer .fullContact { display: none; }
+
+	#loadingDiv {
+	    margin: 41% auto;
+	    width: 25%;
+	}
+
+	.uv-icon svg {
+	  height: 25px !important;
+	  width: 25px !important;
+	}
+	.uv-icon {
+	  height: 25px !important;
+	  width: 25px !important;		
+	}
+	.uv-icon.uv-top-right {
+	  /* disable the 'top' coming from UV's styles */
+	  top: auto !important;
+	  bottom: 1px !important;
+	  right: 3px !important;
+	}
+
+	span.category { display: none !important; }	
 }
 
 @media only screen and (max-width: 481px) {

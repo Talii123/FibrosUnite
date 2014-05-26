@@ -1,120 +1,95 @@
 <!DOCTYPE html>
-<!--[if lt IE 7]>      <html class="no-js lt-ie9 lt-ie8 lt-ie7"> <![endif]-->
-<!--[if IE 7]>         <html class="no-js lt-ie9 lt-ie8"> <![endif]-->
-<!--[if IE 8]>         <html class="no-js lt-ie9"> <![endif]-->
+<!--[if lt IE 7]><html class="no-js lt-ie9 lt-ie8 lt-ie7"><![endif]-->
+<!--[if IE 7]><html class="no-js lt-ie9 lt-ie8"><![endif]-->
+<!--[if IE 8]><html class="no-js lt-ie9"><![endif]-->
 <!--[if gt IE 8]><!--> <html class="no-js"> <!--<![endif]-->
     <head>
         <meta charset="utf-8">
         <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
         <title>Fibrolamellar.Info | Home</title>
         <meta name="description" content="">
-        <!--<meta name="viewport" content="width=device-width">-->
+        
         <meta name="viewport" content="initial-scale=1.0,width=device-width">
 
-        <!--<link rel="stylesheet" href="css/normalize.min.css">
-        <link rel="stylesheet" href="css/main.css">-->
+        
 		<link rel="stylesheet" href="css/fibro.css">
     </head>
 
     <body>
-    <div id="header">
-    	<a href="http://fibrolamellar.info">
-    		<img src="img/fibrologo.png"/>fibrolamellar.info
-    	</a> 
-    	<ul>
-    		<li>About</li>
-	    </ul>
-    </div>
-
-	<div id="main">   
-	    <div id="option-block">
-		    <div class="option">
-		    	<a href="discover.html">
-		  			<div class="option-button">
-			      		<img src="img/files.png">
-				      	<p>Discover</p>
-			      	</div>
-				<span>Find resources shared by our Facebook group</span>
-				</a>
-	        </div>
-
-	      	<div class="option">
-	      		<a href="connect.html">
-		      		<div class="option-button">
-		      			<img src="img/connect.png">
-		      			<p>Ask</p>
-		  			</div>
-		      		<span>Get connected with a Fibrolamellar mentor</span>
-		      	</a>
-	        </div>
-	     
-	      	<div class="option">
-	      		<a href="map.html">
-		      		<div class="option-button">
-		      			<img src="img/map.png">
-		      			<p>Locate</p>
-		  			</div>
-		      		<span>Find people affected by Fibrolamellar</span>
-		      	</a>
-	        </div>        
-	<!--
-	      	<div class="option">
-	      		<a href="learn.html">
-		      		<div class="option-button">
-		      			<img src="img/info.png">
-		      			<p>Learn</p>
-		  			</div>
-		      		<span>Read about Fibrolamellar Hepatocellular Carcinoma</span>
-		      	</a>
-	        </div>        
-	-->
-	<!--
-	        <div class="option">
-	        	<a href="blog.html">
-		      		<div class="option-button">
-		      			<img src="img/blog.png">
-		      			<p>Blog</p>
-		      		</div>
-		      		<span>Fibrolamellar patients write about their experiences</span>
-		      	</a>
-	        </div>
-	 -->
-
-	 		<div id="option-block-footer"> 
-	 			<img src="img/facebook.png" width="60px">
-	 			<span>Become a member of the Fibrolamellar community at <a href="https://www.facebook.com/groups/fibrolamellar/">Fibrolamellars of the World Unite!</a></span>
-
-	 		</div>
-
+    	<div id="fb-root"></div>
+	    <div id="header">
+	    	<a href="http://fibrolamellar.info">
+	    		<img src="img/fibrologo.png"/>fibrolamellar.info
+	    	</a> 
+	    	<ul>
+	    		<li>About</li>
+		    </ul>
 	    </div>
-	</div>
-<div id="footer" class="absolute">
-<span><a href="termsOfUse.html">Terms of Use</a></span> | <span>Got Questions?  Contact:  <a href="mailto:fibrolamellar.info4you@gmail.com">fibrolamellar.info4you@gmail.com</a></span></div>    
 
-      
-    <!--<script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
-    <script>window.jQuery || document.write('<script src="js/vendor/jquery-1.9.1.min.js"><\/script>')</script>
-	<script src="js/vendor/modernizr-2.6.2-respond-1.1.0.min.js"></script>
-     -->
+		<div id="main">   
+			<div class="loginHelper entry" style="display:none">
+				Some resources (such as the 'Discover' page) are only available to members of the <a href="https://www.facebook.com/groups/fibrolamellar">Fibrolamellars of the World Unite!</a> Facebook group. In order to access them, please click the Facebook login button. <div class="fb-login-button" data-max-rows="1" data-size="large" data-show-faces="false" onlogin="initLogin();"></div><span id="loggingInMsg" style="display: none">Logging in...</span><span id="logInFailedMsg" style="display: none">Please Try Again</span>
+			</div>
+		    <div id="option-block">
+			    <div class="option">
+			    	<a href="/discover">
+			  			<div class="option-button">
+				      		<img src="img/files.png">
+					      	<p>Discover</p>
+				      	</div>
+					<span>Find resources shared by our Facebook group</span>
+					</a>
+		        </div>
 
+		      	<div class="option">
+		      		<a href="connect.html">
+			      		<div class="option-button">
+			      			<img src="img/connect.png">
+			      			<p>Ask</p>
+			  			</div>
+			      		<span>Get connected with a Fibrolamellar mentor</span>
+			      	</a>
+		        </div>
+		     
+		      	<div class="option">
+		      		<a href="/map">
+			      		<div class="option-button">
+			      			<img src="img/map.png">
+			      			<p>Locate</p>
+			  			</div>
+			      		<span>Find people affected by Fibrolamellar</span>
+			      	</a>
+		        </div>        
 		
+		
+
+		 		<div id="option-block-footer"> 
+		 			<img src="img/facebook.png" width="60px">
+		 			<span>Become a member of the Fibrolamellar community at <a href="https://www.facebook.com/groups/fibrolamellar/">Fibrolamellars of the World Unite!</a></span>
+
+		 		</div>
+
+		    </div>
+		</div>
+		<div id="footer" class="absolute">
+			<span><a href="termsOfUse.html">Terms of Use</a></span> | <span class="fullContact">Got Questions?  Contact:  <a href="mailto:fibrolamellar.info4you@gmail.com">fibrolamellar.info4you@gmail.com</a></span><span class="smallContact"><a href="mailto:fibrolamellar.info4you@gmail.com">Contact Us</a></span><span class="feedback"> | Feedback:</span>
+		</div>    
+     	
 	    <!-- //-beg- concat_js -->
 		<script src="js/vendor/arrays.js"></script>
 		<script src="js/vendor/jquery-1.9.1.min.js"></script>
-
+		<script src="js/vendor/jquery.cookie.js"></script>
+		<script src="js/updatePageByLoginStatus.js"></script>
+		<!--<script src="js/noconsole.js"></script>-->
 	    <script src="js/plugins.js"></script>
 	    <script src="js/main.js"></script>
+		<!-- this should only be on login pages; might want to bundle here so it can be 
+		pre-loaded so that the FB SDK can be pre-fetched, but not 100% sure that works
+		<script src="js/login.js"></script>-->
 		<script src="js/discover.js"></script>
-		<!-- //-end- concat_js -->
-
-        <script>
-            (function(b,o,i,l,e,r){b.GoogleAnalyticsObject=l;b[l]||(b[l]=
-            function(){(b[l].q=b[l].q||[]).push(arguments)});b[l].l=+new Date;
-            e=o.createElement(i);r=o.getElementsByTagName(i)[0];
-            e.src='//www.google-analytics.com/analytics.js';
-            r.parentNode.insertBefore(e,r)}(window,document,'script','ga'));
-            ga('create','UA-44532306-1', 'fibros-unite.appspot.com');ga('send','pageview');
-        </script>
-
+		<script src="js/loadGoogleAnalytics.js"></script>
+		<script src="js/loadUserVoice.js"></script>
+		<!-- //-beg- concat_js -->
+		
     </body>
 </html>

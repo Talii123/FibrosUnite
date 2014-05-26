@@ -1,10 +1,18 @@
-var noop = function() {;};
+// Disable the console
+(function() {
+    var method;
+    var noop = function () {};
+    var methods = [
+        'assert', 'clear', 'count', 'debug', 'dir', 'dirxml', 'error',
+        'exception', 'group', 'groupCollapsed', 'groupEnd', 'info', 'log',
+        'markTimeline', 'profile', 'profileEnd', 'table', 'time', 'timeEnd',
+        'timeStamp', 'trace', 'warn'
+    ];
+    var length = methods.length;
+    var console = (window.console = window.console || {});
 
-var console = {
-	"log"		: 		noop,
-	"error"		: 		noop,
-	"trace"		: 		noop,
-	"profile"	: 		noop,
-	"warn"		: 		noop,
-	"dir"		: 		noop
-};
+    while (length--) {
+        method = methods[length];
+		console[method] = noop;
+    }
+}());

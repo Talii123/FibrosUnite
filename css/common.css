@@ -12,7 +12,7 @@ body {
   font-family: "HelveticaNeue-Light", "Helvetica Neue Light", "Helvetica Neue", Helvetica, Arial;
   color: #ffffff;
   padding: 10px 15px;
-  background: #3F6A3C url('../img/back.png') repeat;
+  background: #2E763E url('../img/back.png') repeat;
   /*
   background: -moz-linear-gradient(top,  #45c66d 0%, #33a556  100%); 
   background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,#45c66d), color-stop(100%,#33a556 )); 
@@ -36,6 +36,10 @@ iframe {
 iframe.map {
   /* allow maps to grow arbitrarily wide while restricting the width of forms */
   max-width: 10000px;
+}
+
+.fb-login-button iframe {
+  margin: 0;
 }
 
 #header {
@@ -81,7 +85,7 @@ iframe.map {
   outline: none;
 }
 .option a:visited { color: #FFFFFF; }
-.option a:hover span { color: #FFFFFF; }
+.option a:hover { color: #FFFFFF; }
 .option a:active { color: #FFFFFF; }
 .option-button{
   padding-top: 10px;
@@ -115,14 +119,22 @@ iframe.map {
 }
 #option-block-footer a {font-weight: normal; font-style: normal; text-decoration: underline; color: #FFFFFF ; }
 #option-block-footer a:visited { color: #FFFFFF ; }
-#option-block-footer a:hover { color: #E89A96 ; }
-#option-block-footer a:active { color: #E89A96 ; }
+#option-block-footer a:hover, #option-block-footer a:active { color: #E89A96 ; }
 
-
+/*
 #footer span a { text-decoration: underline; color: #FFFFFF ; }
 #footer span a:visited { color: #FFFFFF ; }
 #footer span a:hover { color: #E89A96 ; }
 #footer span a:active { color: #E89A96 ; }
+*/
+
+a { text-decoration: underline; color: #FFFFFF ; }
+a:visited { color: #FFFFFF ; }
+a:hover, a:active, .highlight { color: #E89A96 ; }
+.highlight {font-weight: bold;}
+
+#footer .smallContact { display: none;}
+#footer .feedback { display: none;}
 
 /*#header {
   height: 2% !important;

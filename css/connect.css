@@ -5,7 +5,7 @@
   padding: 10px 15px;
   float: left;
 }
-iframe{
+iframe.google {
   padding: 0;
   height: 87%; /* 520px;
   width: 600px; 
@@ -17,8 +17,7 @@ iframe{
   -moz-border-radius: 15px;
   border-radius: 15px;
   overflow: scroll;
-  overflow-x: hidden;
-  
+  overflow-x: hidden;  
 }
 
 p.text { display: none;} /* Hide the instruction well */

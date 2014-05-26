@@ -1,13 +1,11 @@
 /*==|== discover ====*/
 /**************************************************************/
 #loadingDiv {
-        display:none; 
-        position: absolute; 
-        top: 50%; 
-        margin: 0 auto; 
-        left: 50%; 
-        background-color: blue; 
-        color: white;
+    height: 2em;
+    margin: 15% auto;
+    position: relative;
+    text-align: center;
+    width: 15%;
 }
 .title, .description, .tags {
   width: 100%;
