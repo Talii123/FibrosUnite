@@ -200,7 +200,7 @@ img {
 #appliedTags > button ~ br {
   margin: 0.25em 0 0.5em;
 }
-#appliedTags span:nth-child(1) {
+#appliedTags .h {
   font-weight: bold;
   font-style: italic;
   color: #D0CE6A;

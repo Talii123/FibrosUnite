@@ -8,6 +8,7 @@
 		filteredTagsMap = {},
 
 		urlHelper,
+		autocompleteHelper,
 
 		TAG_TO_TAG_GROUP_MAP = {
 		    "Surgery": "Treatments",
@@ -133,6 +134,32 @@
 	window.App.Discover.init = init;
 	return; 
 
+	function makeAutocompleteHelper() {
+		var autocomplete,
+			$tagSelector,
+			defaultOptions = {};
+
+		return {
+			init: function(jqSelector) {
+				console.log("init autocomplete helper called with jqSelector: ", jqSelector);
+				$tagSelector = $(jqSelector);
+				autocomplete = $tagSelector.chosen(defaultOptions);
+
+				this.updateOptions = function(newLookupOptions) {
+					/*var currentOptions = $.extend(
+						{lookup: newLookupOptions}, 
+						defaultOptions
+					);
+					autocomplete.options(currentOptions);*/
+					$tagSelector.trigger("chosen:updated");
+				};
+
+				// is this needed? 
+				//this.updateOptions();
+			}
+		}
+	}
+
 	function makeUrlHelper() {
 		var MULTI_VALUE_SEPARATOR = "|",
 			qsMap;
@@ -243,7 +270,9 @@
 	}
 
 	function rebuildTagSelector() {
-		$("#"+ADD_TAG_FILTER_SELECTOR_ID).html(f_tagsAndIDsMapToSelectHTML(f_getTagsToIdsMap()));
+		$("#"+ADD_TAG_FILTER_SELECTOR_ID)
+			.html(f_makeOptionGroupsHTML(f_getCurrentOptions()));	
+		if (autocompleteHelper) autocompleteHelper.updateOptions();
 	}
 
 	function restoreTagFilterOptionInSelector(aTagName) {
@@ -338,9 +367,7 @@
 			$docsList.find(".entry").each(function() {$(this).show()});
 		}
 
-
 		rebuildTagSelector();
-		//$("#"+ADD_TAG_FILTER_SELECTOR_ID).html(f_tagsAndIDsMapToSelectHTML(f_getTagsToIdsMap()));
 
 		$docsList.trigger("unselectTag", aTagName);
 	}
@@ -367,7 +394,6 @@
 		$(".entry", $docsList).not($matchedDocs).hide();
 
 		rebuildTagSelector();
-		//$("#"+ADD_TAG_FILTER_SELECTOR_ID).html(f_tagsAndIDsMapToSelectHTML(f_getTagsToIdsMap()));
 
 		// NOT needed if the select options list is regenerated each time a filter is applied or removed
 		//removeTagFilterOptionInSelector(aTagName);
@@ -394,7 +420,7 @@
 	}
 
 
-	function f_makeOptionGroups(optionsArray) {
+	function f_makeOptionGroupsHTML(optionsArray) {
 		var i,
 			optGroupToOptionsMap = {},
 			optionGroupLabel,
@@ -419,12 +445,12 @@
 
 		for (i=0; i < optionsArray.length; ++i) {
 			option = optionsArray[i];
-			optionGroup = TAG_TO_TAG_GROUP_MAP[option.tag];
+			optionGroup = TAG_TO_TAG_GROUP_MAP[option.data];
 			groupOfOptions = optGroupToOptionsMap[optionGroup];
 			if (!groupOfOptions) {
 				groupOfOptions = optGroupToOptionsMap[optionGroup] = [];
 			}
-			groupOfOptions.push(option.optStr);
+			groupOfOptions.push(f_optionToHTML(option));
 		}
 
 		for (i=0; i < OPTION_GROUPS_TO_OUTPUT.length; ++i) {
@@ -444,24 +470,23 @@
 		return output;
 	}
 
-	function f_tagsAndIDsMapToSelectHTML (aTagsToIdsMap) {
-	    var options = $.map(aTagsToIdsMap, function(values, key) {
-	        /*console.log("this: ", this);
-	        console.log("arguments: ", arguments);
-	        console.log("key: ", key);
-	        console.log("values: ", values);*/
-	        
-	        return {tag: key, optStr: "<option value='" + key + "'>" + key + " (" + values.ids.length +")</option>"};
-	    });
-	    
-	    //return options.join("\n");
-	    return f_makeOptionGroups(options).join("\n");
+	function f_optionToHTML(option) {
+		return "<option value='" + option.data + "'>" + option.label + "</option>";
+	}
 
-	    //return "<select>" + options.join("\n") + "</select>";
-	};
+	function f_getOptionsForMap(aTagsToIdsMap) {
+		return $.map(aTagsToIdsMap, function(values, key) {	        
+	        var label = key + " (" + values.ids.length +")";
+	        return {data: key, label: label};
+	    });
+	}
+
+	function f_getCurrentOptions() {
+		return f_getOptionsForMap(f_getTagsToIdsMap());
+	}
 
 	function f_createTagSelectorHTML() {
-		return "<select>" + f_tagsAndIDsMapToSelectHTML(f_getTagsToIdsMap()) + "</select>";
+		return "<select>" + f_makeOptionGroupsHTML(f_getCurrentOptions()) + "</select>";
 	}
 
 	function f_isHidden() {
@@ -521,10 +546,23 @@
 		return tagsToIdsMap;
 	}
 
+
 	function init(features) {
+		var enableFeaturesByURL;
+
 		console.log("Initializing App.Discover");
 
 		features = features || {};
+
+		enableFeaturesByURL = function() {
+			FEATURE_NAMES = ["autocomplete", "shareableURLs"];
+			$.each(FEATURE_NAMES, function(index, featureName) {
+				if (location.search.indexOf(featureName) >= 0) {
+					features[featureName] = true;
+				}
+			});
+		}
+		enableFeaturesByURL();
 
 		$docsList.on("click", "input[name='filterByTag']", function($event) {
 			var tagClicked;
@@ -560,11 +598,24 @@
 			urlHelper.init();			
 		}
 
+		if (features.autocomplete) {
+			console.log("enabling autocomplete...");
+
+			$.getScript("js/vendor/chosen.jquery.min.js").done(function() {
+				autocompleteHelper = makeAutocompleteHelper();
+				autocompleteHelper.init("#"+ADD_TAG_FILTER_SELECTOR_ID);
+				console.log("autocomplete is enabled");				
+			});
+		}
+		else {
+			console.log("NOT enabling autocomplete.");
+		}
+
+
 		$("#loadingDiv").hide();
 		$docsList.show();
 
 		console.log("Done initializing App.Discover");
-
 	}
 
 })(jQuery);
