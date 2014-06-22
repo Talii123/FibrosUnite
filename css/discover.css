@@ -197,23 +197,21 @@ img {
 #sidebar {
   padding-bottom: 20px;
 }
-#sidebar > span {
+#appliedTags > button ~ br {
+  margin: 0.25em 0 0.5em;
+}
+#appliedTags span:nth-child(1) {
   font-weight: bold;
   font-style: italic;
   color: #D0CE6A;
 }
-#sidebar > select {
+#appliedTags select {
   /* White on Dark Green
   background-color: #04452F;
   color: #FFFFFF; */
   background-color: #7D9C59;
   color: #04452F;
   width: 100%;
-}
-div#appliedTags > span {
-  color: #D0CE6A;
-  font-weight: bold;
-  font-style: italic;
 }
 .tagFilter {
   display: block;

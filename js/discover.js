@@ -3,12 +3,10 @@
 (function($) {
 	var $docsList = $("#documentsListing"),
 		$ALL_ENTRIES = $(".entry", "#documentsListing"),
-		SHOW_ALL_VALUE = "*",
 		ADD_TAG_FILTER_SELECTOR_ID = "AddTagFilterSelector",
 		HAS_OWN = Object.prototype.hasOwnProperty,
 		filteredTagsMap = {},
 
-		scrollHandler,
 		urlHelper,
 
 		TAG_TO_TAG_GROUP_MAP = {
@@ -187,24 +185,12 @@
 		function bindHandlers() {
 			$docsList.on("selectTag", addTagToUrl);
 			$docsList.on("unselectTag", removeTagFromUrl);
-			$docsList.on("categoryChanged", updateCategoryForUrl);
 		}
 
 		function init() {
 			console.log("url helper is initializing..");
 			// first character is '#'
 			qsMap = qsToQSMap(location.hash && location.hash.substring(1));
-			if (typeof qsMap.category !== "undefined") {
-				if (qsMap.category !== SHOW_ALL_VALUE) {
-					setVisibleCategory(qsMap.category[0]);
-				}
-				else {					
-					delete qsMap.category;
-				}				
-			}
-			else {
-				qsMap.category = [(getVisibleCategory() || "").replace("_", " ")];
-			}
 			if (typeof qsMap.tags !== "undefined") {
 				$.each(qsMap.tags, function(index, tagName) {
 					selectTag(tagName);
@@ -220,14 +206,6 @@
 
 		function updateURL() {
 			location.hash = toQS();
-		}
-
-		function updateCategoryForUrl($event, selectedCategory) {
-			if (selectedCategory !== SHOW_ALL_VALUE)
-				qsMap.category = [selectedCategory];
-			else
-				delete qsMap.category;
-			updateURL();
 		}
 
 		function addTagToUrl($event, aTagName) {
@@ -262,20 +240,6 @@
 
 	function getMatchingTags(aTagName) {
 		return $("input[name='filterByTag'][value='" + aTagName + "']", $docsList);
-	}
-
-	function getVisibleCategory() {
-		return $("#tagGroupSelect")[0].value;
-	}
-
-	function setVisibleCategory(aNewCategory) {
-		var $categorySelector = $("#tagGroupSelect"),
-			oldCategory = $categorySelector[0].value;
-
-		if (oldCategory !== aNewCategory || aNewCategory !== SHOW_ALL_VALUE) {
-			$categorySelector[0].value = aNewCategory;
-			$categorySelector.trigger("change", aNewCategory)
-		}
 	}
 
 	function rebuildTagSelector() {
@@ -348,33 +312,31 @@
 		});
 		numRequiredTags = requiredTags.length;		
 
-		console.log("entries: ", $(".entry", $docsList));
-		$docsList.find(".entry").each(function() {
-			var hasAllRequiredTags = true,
-				i,
-				$this = $(this),
-				myTags = [],
-				visibleCategory;
+		if (numRequiredTags > 0) {
+			console.log("entries: ", $(".entry", $docsList));
+			$docsList.find(".entry").each(function() {
+				var hasAllRequiredTags = true,
+					i,
+					$this = $(this),
+					myTags = [];
 
-			visibleCategory = getVisibleCategory();
-			if (visibleCategory !== SHOW_ALL_VALUE && !$this.hasClass(visibleCategory)) {
-				console.log("category is a mismatch; visibleCategory = ", visibleCategory, " and $this is: ", $this)
-				return;
-			}
+				$(".tagsList input[name='filterByTag']", $this).each(function() {
+					myTags.push(this.value);
+				});
 
-			$(".tagsList input[name='filterByTag']", $this).each(function() {
-				myTags.push(this.value);
-			});
+				for (i=0; i < numRequiredTags && hasAllRequiredTags; ++i) {
+					hasAllRequiredTags &= (myTags.indexOf(requiredTags[i]) >= 0);
+				}
 
-
-			for (i=0; i < numRequiredTags && hasAllRequiredTags; ++i) {
-				hasAllRequiredTags &= (myTags.indexOf(requiredTags[i]) >= 0);
-			}
-
-			if (hasAllRequiredTags) {
-				$this.show();
-			}
-		});
+				if (hasAllRequiredTags) {
+					$this.show();
+				}
+			});			
+		}
+		else {
+			$("#appliedTags .tagsList").hide();
+			$docsList.find(".entry").each(function() {$(this).show()});
+		}
 
 
 		rebuildTagSelector();
@@ -394,7 +356,7 @@
 		$matchedTags.addClass("selected");
 
 		// update LHN
-		$("#appliedTags .tagsList").append($("<span class='tagFilter'></span>").html(aTagName+" | <input type='submit' name='removeTagFilter' value='x'/>").data("tagName", aTagName));
+		$("#appliedTags .tagsList").show().append($("<span class='tagFilter'></span>").html(aTagName+" | <input type='submit' name='removeTagFilter' value='x'/>").data("tagName", aTagName));
 
 		
 //		console.log("$matchedTags: ", $matchedTags);
@@ -502,23 +464,9 @@
 		return "<select>" + f_tagsAndIDsMapToSelectHTML(f_getTagsToIdsMap()) + "</select>";
 	}
 
-	function f_isHidden($entry) {
-	//	var entry = $(this).closest(".entry")[0];  
-		//console.log("\n\this.style.display: ", entry.style.display); 
-		return $entry[0].style.display != "none"
+	function f_isHidden() {
+		return this.style.display != "none"
 	}	
-
-	function f_isMatchingCategory($entry, aCategory) {
-		return $entry.hasClass(aCategory);
-	}
-
-	function f_filterMatchingDoc($entry, aCategory) {
-		var isHidden = !f_isHidden($entry),
-		 	isMatchingCategory = (aCategory == SHOW_ALL_VALUE) || f_isMatchingCategory($entry, aCategory);
-
-		console.log("isHidden = ", isHidden, ", isMatchingCategory = ", isMatchingCategory);
-		return !isHidden && isMatchingCategory;
-	}
 
 	function f_getIdsAndTagsForEntry() {
 		var $entry = $(this);
@@ -533,21 +481,11 @@
 	    };
 	};	
 
-	function f_getDocFilter(filterFunc, selectedCategory) {
-		console.log("selectedCategory is ", selectedCategory);
-
-		return function() {
-			var $entry = $(this);
-
-			return filterFunc($entry, selectedCategory);
-		}
-	} 
-
 	function f_getTagsToIdsMap() {
 		var idToTagsList;
 
 		idToTagsList = $ALL_ENTRIES
-			.filter(f_getDocFilter(f_filterMatchingDoc, getVisibleCategory()))
+			.filter(f_isHidden)
 			.map(f_getIdsAndTagsForEntry);
 		
 		console.log("idToTagsList: ", idToTagsList);
@@ -588,66 +526,6 @@
 
 		features = features || {};
 
-		$("#tagGroupSelect").on("change", function() {
-			var category = this.value,
-				$docsToShow,
-				$docsToHide;
-
-			/*console.log("showGroup: ", showGroup);
-			if (showGroup === SHOW_ALL_VALUE) {
-				$("#documentsListing > .entry").show();
-			}
-			else {
-				$("#documentsListing > .entry").each(function() {
-					var $this = $(this);
-					if ($this.hasClass(showGroup)) {
-						$this.show();
-					}
-					else {
-						$this.hide();
-					}
-				});						
-			}*/
-
-			$docsToShow = $ALL_ENTRIES;
-			if (category != SHOW_ALL_VALUE)
-				$docsToShow = $docsToShow.filter(f_getDocFilter(f_isMatchingCategory, category))
-			
-
-			for (tag in filteredTagsMap) {
-				if (HAS_OWN.call(filteredTagsMap, tag)) {
-					// TODO: SERIOUSLY, this should NOT be looking at the dom for the data
-					$docsToShow = $docsToShow.filter(function () {
-						var tagSelector = "input[name='filterByTag'][value='" + tag + "']",
-							tags = $(this).find(tagSelector);
-
-						console.log("tags: ", tags);
-						console.log("tags && tags.length > 0: ", (tags && tags.length > 0));
-						return tags && tags.length > 0;
-					});
-					console.log("after filtering on tag: ", tag, " $docsToShow=", $docsToShow);
-				}
-				else {
-					console.log("ignoring tag: ", tag, " because it's not an own property.");
-				}
-			}
-
-			$docsToHide = $ALL_ENTRIES.not($docsToShow)
-
-			$docsToShow.show();
-			$docsToHide.hide();
-			/*
-			// unselect all selected tags
-			$("#appliedTags input[name='removeTagFilter']").each(function() {
-				$(this).trigger("click");
-			})
-			*/
-
-			rebuildTagSelector();
-
-			$docsList.trigger("categoryChanged", category);
-		});	
-
 		$docsList.on("click", "input[name='filterByTag']", function($event) {
 			var tagClicked;
 
@@ -669,99 +547,13 @@
 				console.log("tagToSelect: ", tagToSelect);
 				selectTag(tagToSelect);			
 			})
-			.insertAfter("#appliedTags")
-			.before($(f_createTagSelectorHTML()).attr({"id" : ADD_TAG_FILTER_SELECTOR_ID}));
-
+			.insertBefore("#appliedTags .tagsList")
+			.before($(f_createTagSelectorHTML()).attr({"id" : ADD_TAG_FILTER_SELECTOR_ID}))
+			.after("<br/>");
 		$(".helpLink").on("click", function($event) {
 			$event.preventDefault();
 			$("#helpText").slideToggle();
 		})
-
-		/*scrollHandler = (function () {
-			var mainTop = $("#main").position().top,
-				$window = $(window),
-				$sidebar = $("#sidebar"),
-				sidebarTop = $sidebar.position().top,
-				sidebarLeft = $sidebar.position().left;
-
-			return function() {
-
-				if ($window.scrollTop() >= mainTop) {
-					console.log("sidebar should be fixed now.");
-					$sidebar.css({
-						"position" : "fixed",
-						"top" : sidebarLeft
-					});
-				}
-				else {
-					console.log("sidebar should be floating now.");
-					$sidebar.css({
-						"position" : "",
-						"top" : sidebarTop
-					});
-				}
-			}
-		})();
-
-		$(window).on("scroll", scrollHandler);*/
-		//var headerBottom = $("#header").position().top + $("#header").height();
-		
-		/*
-		var sidebarTop = $("#sidebar").position().top;
-		var mainHeight = $(window).height() - sidebarTop - $("#footer").height() - 40;
-		var newMainCSS = {
-			"position" : "absolute",
-			//"top" : sidebarTop,
-			"height" : mainHeight,
-			"overflow-y" : "scroll"
-		};
-		if (sidebarTop > 0) {
-			newMainCSS.top = sidebarTop;
-		}
-		console.log("mainHeight: ", mainHeight);
-		$("#main").css(newMainCSS);
-		$("#footer").addClass("absolute");
-		$("body").css("overflow-x", "hidden");
-		*/
-
-	/*	var windowHeight = $(window).height();
-		var $body = $("body");
-		var bodyPadding = parseInt($body.css("padding-top")) + parseInt($body.css("padding-bottom"));
-
-		var minTopHeight = 40;
-		var minBottomHeight = 30;
-
-		var mainMargin = 0.01 * windowHeight;
-		var topHeight = 0.015 * windowHeight;
-		topHeight = topHeight >= minTopHeight ? topHeight : minTopHeight;
-		var bottomHeight = 0.01 * windowHeight;
-		bottomHeight = bottomHeight >= minBottomHeight ? bottomHeight : minBottomHeight;
-		
-		var mainHeight = windowHeight - topHeight - bottomHeight - bodyPadding - mainMargin - mainMargin - 20;
-		var padding = mainHeight * 0.01;
-		
-
-		$("#header").css({
-			"height": topHeight,
-			"margin" : "0 0 " +mainMargin + "px 0"
-		});
-		$("#footer").css({
-			"height" : bottomHeight,
-			"margin" : mainMargin + "px 0 0 0"
-		});
-		$("#main").css({
-			"height" : mainHeight,
-			"margin" : 0,
-			"overflow-y" : "scroll",
-			
-		});
-		alert("windowHeight: " + windowHeight +
-			"\ntopHeight: " + topHeight +
-			"\nbottomHeight: " + bottomHeight + 
-			"\nmainHeight: "+ mainHeight);
-
-	*/
-
 
 		if (features.shareableURLs) {
 			urlHelper = makeUrlHelper(),
