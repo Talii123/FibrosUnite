@@ -9,130 +9,289 @@
 
 		urlHelper,
 		autocompleteHelper,
+		stateDescriptor,
+		callToActionHelper,
+		searchHelper,
+
 
 		TAG_TO_TAG_GROUP_MAP = {
-		    "Surgery": "Treatments",
-		    "Chemo": "Treatments",
-		    "Radiation": "Treatments",
-		    "Chemoembolization / T.A.C.E": "Treatments",
-		    "Radioembolization": "Treatments",
-		    "Ethanol Embolization": "Treatments",
-		    "Embolization": "Treatments",
-		    "Immunotherapy": "Treatments",
-		    "Bone Marrow Transplantation": "Treatments",
-		    "Alternative Therapy": "Treatments",
-		    "Clinical Trials": "Treatments",
-		    "Nutrition": "General Knowledge and Tips",
-		    "Exercise": "General Knowledge and Tips",
-		    "Emotional Support": "General Knowledge and Tips",
-		    "Caring for Someone Fighting Fibrolamellar": "General Knowledge and Tips",
-		    "Comforting Someone After the Loss of a Loved One": "General Knowledge and Tips",
-		    "Doing Your Own Research on Fibrolamellar": "General Knowledge and Tips",
-		    "Advocating for Yourself or a Loved One": "General Knowledge and Tips",
-		    "\"5FU\"/Fluorouracil + \"Intron\"/Interferon Alpha": "Chemotherapy",
-		    "\"5FU\"/Fluorouracil + \"Eloxatin\"/Oxaliplatin": "Chemotherapy",
-		    "\"5FU\"/Fluorouracil ": "Chemotherapy",
-		    "\"Nexavar\"/Sorafenib + \"Avastin\"/Bevacizumab": "Chemotherapy",
-		    "\"Nexavar\"/Sorafenib": "Chemotherapy",
-		    "\"Xeloda\"/Capecitabine": "Chemotherapy",
-		    "\"Platinol\"/Cisplatin": "Chemotherapy",
-		    "\"Sutent\"/Sunitinib": "Chemotherapy",
-		    "\"AVATAR\" (\"Avastin\"/Bevacizumab + \"Tarceva\"/Erlotinib)": "Chemotherapy",
-		    "\"Tarceva\"/Erlotinib": "Chemotherapy",
-		    "\"GEMOX\" (\"Gemzar\"/Gemcitabine + \"Eloxatin\"/Oxaliplatin)": "Chemotherapy",
-		    "\"Gemzar\"/Gemcitabine + \"Eloxatin\"/Oxaliplatin + \"Avastin\"/Bevacizumab": "Chemotherapy",
-		    "\"Gemzar\"/Gemcitabine": "Chemotherapy",
-		    "\"Adriamycin\"/Doxorubicin + \"Platinol\"/Cisplatin": "Chemotherapy",
-		    "\"Adriamycin\"/\"Doxil\"/Doxorubicin": "Chemotherapy",
-		    "\"Affinitor\"/Everolimus": "Chemotherapy",
-		    "PIAF - Platinum Interferon Adriamycin Fluorouracil": "Chemotherapy",
-		    "\"Avastin\"/Bevacizumab": "Chemotherapy",
-		    "Linifanib": "Chemotherapy",
-		    "\"Camptosar\"/Irinotecan": "Chemotherapy",
-		    "\"Oncovin\"/Vincristine": "Chemotherapy",
-		    "Mouth Sores": "Symptoms and Side Effects",
-		    "Nausea": "Symptoms and Side Effects",
-		    "Fatigue": "Symptoms and Side Effects",
-		    "Loss of Appetite": "Symptoms and Side Effects",
-		    "Problems with Hands and Feet": "Symptoms and Side Effects",
-		    "Jaundice (yellowing of skin or eyes)": "Symptoms and Side Effects",
-		    "Abdominal Pain": "Symptoms and Side Effects",
-		    "Ache and Pains": "Symptoms and Side Effects",
-		    "Neuropathy (loss of feeling in fingers or toes)": "Symptoms and Side Effects",
-		    "Thrush (white tongue)": "Symptoms and Side Effects",
-		    "Blood Clots": "Symptoms and Side Effects",
-		    "Lymphedema (Swelling)": "Symptoms and Side Effects",
-		    "Changes in Sense of Taste (e.g. a metal taste in your mouth)": "Symptoms and Side Effects",
-		    "High Ammonia Levels": "Symptoms and Side Effects",
-		    "Managing Catheters/Drains": "Symptoms and Side Effects",
-		    "Ascites": "Symptoms and Side Effects",
-		    "Abscess": "Symptoms and Side Effects",
-		    "Weight Loss": "Symptoms and Side Effects",
-		    "Weight Gain": "Symptoms and Side Effects",
-		    "Bowel Obstruction": "Symptoms and Side Effects",
-		    "Fever": "Symptoms and Side Effects",
-		    "Diarrhea": "Symptoms and Side Effects",
-		    "Rashes": "Symptoms and Side Effects",
-		    "Itchiness": "Symptoms and Side Effects",
-		    "Hair Loss": "Symptoms and Side Effects",
-		    "Vomiting": "Symptoms and Side Effects",
-		    "Low Blood Cell Counts (Neutropenia, Anemia)": "Symptoms and Side Effects",
-		    "Heartburn": "Symptoms and Side Effects",
-		    "Black Stools": "Symptoms and Side Effects",
-		    "External Beam/Proton Radiation": "Radiation",
-		    "Y90/Sirspheres/Therospheres - Radioactive Beads": "Radiation",
-		    "RFA (Radiofrequency Ablation)": "Radiation",
-		    "Cyberknife": "Radiation",
-		    "Brachytherapy": "Radiation",
-		    "Liver Surgery": "Surgery",
-		    "Liver Transplantation": "Surgery",
-		    "Surgery to Remove Tumors Outside of the Liver": "Surgery",
-		    "Laproscopic or Minimally Invasive Surgery": "Surgery",
-		    "Laser Surgery": "Surgery",
-		    "Recurrence": "Disease Stage",
-		    "Inspiration": "General Knowledge and Tips",
-		    "Advocacy": "General Knowledge and Tips",
-		    "Metastases": "Disease Stage",
-		    "No Disease Outside the Liver": "Disease Stage",
-		    "Second Opinions": "General Knowledge and Tips",
-		    "Cysts": "Disease Stage",
-		    "Paracentesis": "Symptoms and Side Effects",
-		    "Diuretics": "Symptoms and Side Effects",
-		    "Infection": "Symptoms and Side Effects",
-		    "Edema": "Symptoms and Side Effects",
-		    "Lasix": "Symptoms and Side Effects",
-		    "Compression Socks": "Symptoms and Side Effects",
-		    "Albumin": "Symptoms and Side Effects",
-		    "Low Sodium": "Symptoms and Side Effects",
-		    "Tumor Growth": "Disease Stage",
-		    "Tumor Shrinkage": "Disease Stage",
-		    "Stable Disease": "Disease Stage",
-		    "Liver": "Disease Sites/Locations",
-		    "Lymph Nodes": "Disease Sites/Locations",
-		    "Abdomen": "Disease Sites/Locations",
-		    "Chest": "Disease Sites/Locations",
-		    "Lungs": "Disease Sites/Locations",
-		    "Diaphragm": "Disease Sites/Locations",
-		    "Bones": "Disease Sites/Locations",
-		    "Brain": "Disease Sites/Locations",
-		    "Pancreas": "Disease Sites/Locations",
-		    "Gall Bladder": "Disease Sites/Locations",
-		    "Portal Vein": "Disease Sites/Locations",
-		    "Ovaries": "Disease Sites/Locations",
-		    "Kidney": "Disease Sites/Locations",
-		    "Bladder": "Disease Sites/Locations",
-		    "Stomach": "Disease Sites/Locations",
-		    "Spleen": "Disease Sites/Locations",
-		    "Stage I": "Disease Stage",
-		    "Stage II": "Disease Stage",
-		    "Stage III": "Disease Stage",
-		    "Stage IV": "Disease Stage"
+			"Surgery": "Treatments",
+			"Chemo": "Treatments",
+			"Radiation": "Treatments",
+			"Chemoembolization / T.A.C.E": "Treatments",
+			"Radioembolization": "Treatments",
+			"Ethanol Embolization": "Treatments",
+			"Embolization": "Treatments",
+			"Immunotherapy": "Treatments",
+			"Bone Marrow Transplantation": "Treatments",
+			"Alternative Therapy": "Treatments",
+			"Clinical Trials": "Treatments",
+			"Nutrition": "General Knowledge and Tips",
+			"Exercise": "General Knowledge and Tips",
+			"Emotional Support": "General Knowledge and Tips",
+			"Caring for Someone Fighting Fibrolamellar": "General Knowledge and Tips",
+			"Comforting Someone After the Loss of a Loved One": "General Knowledge and Tips",
+			"Doing Your Own Research on Fibrolamellar": "General Knowledge and Tips",
+			"Advocating for Yourself or a Loved One": "General Knowledge and Tips",
+			"\"5FU\"/Fluorouracil + \"Intron\"/Interferon Alpha": "Chemotherapy",
+			"\"5FU\"/Fluorouracil + \"Eloxatin\"/Oxaliplatin": "Chemotherapy",
+			"\"5FU\"/Fluorouracil ": "Chemotherapy",
+			"\"Nexavar\"/Sorafenib + \"Avastin\"/Bevacizumab": "Chemotherapy",
+			"\"Nexavar\"/Sorafenib": "Chemotherapy",
+			"\"Xeloda\"/Capecitabine": "Chemotherapy",
+			"\"Platinol\"/Cisplatin": "Chemotherapy",
+			"\"Sutent\"/Sunitinib": "Chemotherapy",
+			"\"AVATAR\" (\"Avastin\"/Bevacizumab + \"Tarceva\"/Erlotinib)": "Chemotherapy",
+			"\"Tarceva\"/Erlotinib": "Chemotherapy",
+			"\"GEMOX\" (\"Gemzar\"/Gemcitabine + \"Eloxatin\"/Oxaliplatin)": "Chemotherapy",
+			"\"Gemzar\"/Gemcitabine + \"Eloxatin\"/Oxaliplatin + \"Avastin\"/Bevacizumab": "Chemotherapy",
+			"\"Gemzar\"/Gemcitabine": "Chemotherapy",
+			"\"Adriamycin\"/Doxorubicin + \"Platinol\"/Cisplatin": "Chemotherapy",
+			"\"Adriamycin\"/\"Doxil\"/Doxorubicin": "Chemotherapy",
+			"\"Affinitor\"/Everolimus": "Chemotherapy",
+			"PIAF - Platinum Interferon Adriamycin Fluorouracil": "Chemotherapy",
+			"\"Avastin\"/Bevacizumab": "Chemotherapy",
+			"Linifanib": "Chemotherapy",
+			"\"Camptosar\"/Irinotecan": "Chemotherapy",
+			"\"Oncovin\"/Vincristine": "Chemotherapy",
+			"Mouth Sores": "Symptoms and Side Effects",
+			"Nausea": "Symptoms and Side Effects",
+			"Fatigue": "Symptoms and Side Effects",
+			"Loss of Appetite": "Symptoms and Side Effects",
+			"Problems with Hands and Feet": "Symptoms and Side Effects",
+			"Jaundice (yellowing of skin or eyes)": "Symptoms and Side Effects",
+			"Abdominal Pain": "Symptoms and Side Effects",
+			"Ache and Pains": "Symptoms and Side Effects",
+			"Neuropathy (loss of feeling in fingers or toes)": "Symptoms and Side Effects",
+			"Thrush (white tongue)": "Symptoms and Side Effects",
+			"Blood Clots": "Symptoms and Side Effects",
+			"Lymphedema (Swelling)": "Symptoms and Side Effects",
+			"Changes in Sense of Taste (e.g. a metal taste in your mouth)": "Symptoms and Side Effects",
+			"High Ammonia Levels": "Symptoms and Side Effects",
+			"Managing Catheters/Drains": "Symptoms and Side Effects",
+			"Ascites": "Symptoms and Side Effects",
+			"Abscess": "Symptoms and Side Effects",
+			"Weight Loss": "Symptoms and Side Effects",
+			"Weight Gain": "Symptoms and Side Effects",
+			"Bowel Obstruction": "Symptoms and Side Effects",
+			"Fever": "Symptoms and Side Effects",
+			"Diarrhea": "Symptoms and Side Effects",
+			"Rashes": "Symptoms and Side Effects",
+			"Itchiness": "Symptoms and Side Effects",
+			"Hair Loss": "Symptoms and Side Effects",
+			"Vomiting": "Symptoms and Side Effects",
+			"Low Blood Cell Counts (Neutropenia, Anemia)": "Symptoms and Side Effects",
+			"Heartburn": "Symptoms and Side Effects",
+			"Black Stools": "Symptoms and Side Effects",
+			"External Beam/Proton Radiation": "Radiation",
+			"Y90/Sirspheres/Therospheres - Radioactive Beads": "Radiation",
+			"RFA (Radiofrequency Ablation)": "Radiation",
+			"Cyberknife": "Radiation",
+			"Brachytherapy": "Radiation",
+			"Liver Surgery": "Surgery",
+			"Liver Transplantation": "Surgery",
+			"Surgery to Remove Tumors Outside of the Liver": "Surgery",
+			"Laproscopic or Minimally Invasive Surgery": "Surgery",
+			"Laser Surgery": "Surgery",
+			"Recurrence": "Disease Stage",
+			"Inspiration": "General Knowledge and Tips",
+			"Advocacy": "General Knowledge and Tips",
+			"Metastases": "Disease Stage",
+			"No Disease Outside the Liver": "Disease Stage",
+			"Second Opinions": "General Knowledge and Tips",
+			"Cysts": "Disease Stage",
+			"Paracentesis": "Symptoms and Side Effects",
+			"Diuretics": "Symptoms and Side Effects",
+			"Infection": "Symptoms and Side Effects",
+			"Edema": "Symptoms and Side Effects",
+			"Lasix": "Symptoms and Side Effects",
+			"Compression Socks": "Symptoms and Side Effects",
+			"Albumin": "Symptoms and Side Effects",
+			"Low Sodium": "Symptoms and Side Effects",
+			"Tumor Growth": "Disease Stage",
+			"Tumor Shrinkage": "Disease Stage",
+			"Stable Disease": "Disease Stage",
+			"Liver": "Disease Sites/Locations",
+			"Lymph Nodes": "Disease Sites/Locations",
+			"Abdomen": "Disease Sites/Locations",
+			"Chest": "Disease Sites/Locations",
+			"Lungs": "Disease Sites/Locations",
+			"Diaphragm": "Disease Sites/Locations",
+			"Bones": "Disease Sites/Locations",
+			"Brain": "Disease Sites/Locations",
+			"Pancreas": "Disease Sites/Locations",
+			"Gall Bladder": "Disease Sites/Locations",
+			"Portal Vein": "Disease Sites/Locations",
+			"Ovaries": "Disease Sites/Locations",
+			"Kidney": "Disease Sites/Locations",
+			"Bladder": "Disease Sites/Locations",
+			"Stomach": "Disease Sites/Locations",
+			"Spleen": "Disease Sites/Locations",
+			"Stage I": "Disease Stage",
+			"Stage II": "Disease Stage",
+			"Stage III": "Disease Stage",
+			"Stage IV": "Disease Stage"
 		};
 
 	window.App = window.App || {};
 	window.App.Discover = window.App.Discover || {};
 	window.App.Discover.init = init;
 	return; 
+
+	function getAppliedTags() {
+		var appliedTags = [];
+		$.each(filteredTagsMap, function(tag) {
+			if (HAS_OWN.call(filteredTagsMap, tag)) {
+				appliedTags.push(tag);
+			}
+		});
+		return appliedTags;
+	}
+
+	function makeCallToActionHelper() {
+		var DEFAULT_CALL_TO_ACTION = "Click on a title to see the document",
+			CALL_TO_ACTION_CLASS = "ctaHighlighted",
+			$CALL_TO_ACTION = $("#message .cta"),
+			TITLES_SELECTOR = ".title > h2 > a";
+
+		function highlightTitles() {
+			$(TITLES_SELECTOR).addClass(CALL_TO_ACTION_CLASS)
+		}
+
+		function unhighlightTitles() {
+			$(TITLES_SELECTOR).removeClass(CALL_TO_ACTION_CLASS)
+		}
+
+		function doWhenDefault(f) {
+			return function() {
+				if ($CALL_TO_ACTION.text() === DEFAULT_CALL_TO_ACTION) f();	
+			}
+		}
+
+		function bindHandlers() {
+			$CALL_TO_ACTION.hover(
+				doWhenDefault(highlightTitles),
+				doWhenDefault(unhighlightTitles)
+			);
+		}
+
+		return {
+			init : 	function() {
+						bindHandlers();
+					},
+			setCTA: function(ctaHTML) {
+						$CALL_TO_ACTION.html(ctaHTML);
+					},
+			reset: 	function() {
+						$CALL_TO_ACTION.html(DEFAULT_CALL_TO_ACTION);
+					}
+		};
+	}
+
+	function makeSearchHelper(openSearchInSamePage) {
+		var FB_SEARCH_BASE_URL =
+				"https://www.facebook.com/groups/fibrolamellar/search/?query=",
+			DEFAULT_CTA_MSG = "Click here to search our groups for posts matching those tags.",
+			LINK_TEXT = "Click here",
+			TARGET_ATTR = !openSearchInSamePage ? "target='_blank'" : "";
+
+		function makeQuery() {
+			var appliedTags = getAppliedTags() || [];
+
+			appliedTags = appliedTags.join(',')
+				.replace("'", "")
+				.replace('"', '');
+			return FB_SEARCH_BASE_URL + encodeURIComponent(appliedTags);
+		}
+
+		function makeSearchCTA(href) {
+			var closeTagIndex =
+					DEFAULT_CTA_MSG.indexOf(LINK_TEXT) + LINK_TEXT.length;
+
+			return "<a href='" + href + "' " + TARGET_ATTR + " >" +
+				DEFAULT_CTA_MSG.substring(0, closeTagIndex) +
+				"</a>" +
+				DEFAULT_CTA_MSG.substring(closeTagIndex);
+		}
+
+		function onTagSelected() {
+			callToActionHelper.setCTA(makeSearchCTA(makeQuery()));
+		}
+
+		function onTagUnselected() {
+			var query = makeQuery();
+			if (query.length != FB_SEARCH_BASE_URL.length) {
+				callToActionHelper.setCTA(makeSearchCTA(query));
+			}
+			else {
+				callToActionHelper.reset();
+			}
+		}
+
+		function bindHandlers() {
+			$docsList.on("selectTag", onTagSelected);
+			$docsList.on("unselectTag", onTagUnselected);
+		}
+
+		return {
+			init: 	function() {
+						console.log("search cta is initializing..");
+						bindHandlers();
+						console.log("search cta is DONE initializing!");				
+					}
+		};
+	}
+
+	function makeStateDescriptor() {
+		var DEFAULT_STATE_DESCRIPTOR = "Showing all documents in our Facebook Group.",
+			STATE_TAG_CLASS = "describedTag",
+			$STATE_DESCRIPTOR = $("#message .showing");
+
+		function bindHandlers() {
+			$docsList.on("selectTag", updateStateDescriptor);
+			$docsList.on("unselectTag", updateStateDescriptor);
+		}
+
+		function updateStateDescriptor() {
+			var newShowingMessage,
+				appliedTags = [],
+				lastAppliedTag;
+
+			newShowingMessage = "Now showing documents tagged with ";
+			appliedTags = getAppliedTags() || [];
+			console.log("appliedTags: ", appliedTags);
+			appliedTags = $.map(appliedTags, function(tag) {
+				return "<span class='"+STATE_TAG_CLASS+"'>'" + tag + "'</span>"
+			});
+
+			switch (appliedTags.length) {
+				case 0:
+					newShowingMessage = DEFAULT_STATE_DESCRIPTOR;
+					break;
+
+				case 1:
+					newShowingMessage += appliedTags[0] + ".";
+					break;
+
+				default:
+					lastAppliedTag = appliedTags.pop();
+					newShowingMessage += appliedTags.join(", ") + " and " + lastAppliedTag + ".";
+					break;
+			}
+
+			$STATE_DESCRIPTOR.html(newShowingMessage);
+		}
+
+
+		return {
+			init: function() {
+				console.log("state descriptor is initializing..");
+				bindHandlers();
+				console.log("state descriptor is DONE initializing!");				
+			}
+		};
+
+	}
 
 	function makeAutocompleteHelper() {
 		var autocomplete,
@@ -476,9 +635,9 @@
 
 	function f_getOptionsForMap(aTagsToIdsMap) {
 		return $.map(aTagsToIdsMap, function(values, key) {	        
-	        var label = key + " (" + values.ids.length +")";
-	        return {data: key, label: label};
-	    });
+			var label = key + " (" + values.ids.length +")";
+			return {data: key, label: label};
+		});
 	}
 
 	function f_getCurrentOptions() {
@@ -495,15 +654,15 @@
 
 	function f_getIdsAndTagsForEntry() {
 		var $entry = $(this);
-	    /*var $this = $(this),
-	        $entry = $this.closest(".entry");*/
-	    
-	    return {
-	        "id" : $entry.prop("id"),
-	        "tags" : $("input[name='filterByTag']", $entry).map(function() { 
-	        	return this.value; 
-	        })
-	    };
+		/*var $this = $(this),
+			$entry = $this.closest(".entry");*/
+
+		return {
+			"id" : $entry.prop("id"),
+			"tags" : $("input[name='filterByTag']", $entry).map(function() { 
+				return this.value;
+			})
+		};
 	};	
 
 	function f_getTagsToIdsMap() {
@@ -519,25 +678,25 @@
 		$.each(idToTagsList, function() {
 		  var id = this.id;
 		  $.each(this.tags, function() {
-		    var idsForTag;
+			var idsForTag;
 
-		    // console.log("filteredTags: ", filteredTags);
-		    // console.log("this: ", ""+this);
-		    // console.log("filteredTags.indexOf(this): ", filteredTags.indexOf(""+this));
-		    // don't include tags that are already filtered as an option
-		    // not sure why the string type coercion is needed
-		    //if (filteredTags.indexOf(""+this) >= 0 ) return;
-		    if (filteredTagsMap[this]) return;
+			// console.log("filteredTags: ", filteredTags);
+			// console.log("this: ", ""+this);
+			// console.log("filteredTags.indexOf(this): ", filteredTags.indexOf(""+this));
+			// don't include tags that are already filtered as an option
+			// not sure why the string type coercion is needed
+			//if (filteredTags.indexOf(""+this) >= 0 ) return;
+			if (filteredTagsMap[this]) return;
 
-		    idsForTag = tagsToIdsMap[this];
-		    if (!idsForTag) {
-		      idsForTag = {
-		        "ids" : []
-		      };
-		      tagsToIdsMap[this] = idsForTag;
-		    }
-		    
-		    idsForTag.ids.push(id);
+			idsForTag = tagsToIdsMap[this];
+			if (!idsForTag) {
+			  idsForTag = {
+				"ids" : []
+			  };
+			  tagsToIdsMap[this] = idsForTag;
+			}
+
+			idsForTag.ids.push(id);
 		  });
 		});
 
@@ -591,7 +750,25 @@
 		$(".helpLink").on("click", function($event) {
 			$event.preventDefault();
 			$("#helpText").slideToggle();
-		})
+		});
+
+		if (features.stateDescriptor) {
+			console.log("enabling state descriptor...");
+			stateDescriptor = makeStateDescriptor();
+			stateDescriptor.init();
+		}
+
+		if (features.callToAction) {
+			console.log("enabling call to action helper...");
+			callToActionHelper = makeCallToActionHelper();
+			callToActionHelper.init();
+		}
+
+		if (features.search) {
+			console.log("enabling search helper...");
+			searchHelper = makeSearchHelper();
+			searchHelper.init();
+		}
 
 		if (features.shareableURLs) {
 			urlHelper = makeUrlHelper(),
