@@ -130,7 +130,7 @@ iframe.map {
 
 a { text-decoration: underline; color: #FFFFFF ; }
 a:visited { color: #FFFFFF ; }
-a:hover, a:active, .highlight { color: #E89A96 ; }
+a:hover, a:active, .highlight, .button:hover { color: #E89A96 ; }
 .highlight {font-weight: bold;}
 
 #footer .smallContact { display: none;}

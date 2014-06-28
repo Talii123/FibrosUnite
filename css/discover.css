@@ -48,8 +48,7 @@ img {
   border-radius: 15px;
   border: #04452F solid 2px;
 }
-/*#documentsListing > div:hover {*/
-.entry:hover {
+#documentsListing .entry:hover {
   border: #e6918c solid 2px;
   /* OPACITY OF ENTIRE DOCUMENT BOX ON HOVER
   -webkit-opacity: 0.6;
@@ -221,9 +220,58 @@ img {
   border: 1px #e6918c solid;
 }
 
-
 #helpText {
-    height: 10em;
+  height: 10em;
+  overflow-y: auto;
+  padding: 5px;
+}
+
+a {
+  color: #FFFFFF;
+  text-decoration: none;
+}
+.button.close {
+  float: right;
+  margin-left: 18px
+}
+.entry {
+    margin: 0 0.5em 0.85em 0.25em;
+}
+span.category {
+    color: #D0CE6A;
+    display: inline-block;
+    float: right;
+    font-style: italic;
+}
+.label {
+    color: #D0CE6A;
+    font-style: italic;
+    font-weight: bold;
+}
+#main {
+    overflow-y: inherit;
+}
+#documentsListing {
+    height: 95%;
     overflow-y: auto;
-    padding: 5px;
+}
+.cta {
+  margin-left: 10px;
+  /* merge these with other rules */
+    color: #D0CE6A;
+    font-style: italic;
+    font-weight: bold;
+}
+.describedTag {
+  font-weight: bold;
+  color: #E6918C;
+}
+.title > h2 > a {
+  margin-left: 6px;
+}
+.ctaHighlighted {
+  border: 3px solid #D0CE6A;
+  padding: 0 3px;
+  border-radius: 3px;
+  margin-left: 0 !important;
 }

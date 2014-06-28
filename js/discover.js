@@ -148,11 +148,23 @@
 		return appliedTags;
 	}
 
+	function ensureInPage(selector, componentName) {
+		var $jqElement;
+
+		componentName = componentName || "component";
+		$jqElement = $(selector);
+		if ($jqElement.length <= 0) {
+			console.error("ERROR: cannot create " + componentName + " because no DOM node matches $('" + selector + "')");
+		}
+		return $jqElement;
+	}
+
 	function makeCallToActionHelper() {
 		var DEFAULT_CALL_TO_ACTION = "Click on a title to see the document",
 			CALL_TO_ACTION_CLASS = "ctaHighlighted",
-			$CALL_TO_ACTION = $("#message .cta"),
+			$CALL_TO_ACTION = ensureInPage("#message .cta", "callToActionHelper"),
 			TITLES_SELECTOR = ".title > h2 > a";
+
 
 		function highlightTitles() {
 			$(TITLES_SELECTOR).addClass(CALL_TO_ACTION_CLASS)
@@ -245,7 +257,7 @@
 	function makeStateDescriptor() {
 		var DEFAULT_STATE_DESCRIPTOR = "Showing all documents in our Facebook Group.",
 			STATE_TAG_CLASS = "describedTag",
-			$STATE_DESCRIPTOR = $("#message .showing");
+			$STATE_DESCRIPTOR = ensureInPage("#message .showing", "stateDescriptor");
 
 		function bindHandlers() {
 			$docsList.on("selectTag", updateStateDescriptor);
@@ -301,7 +313,7 @@
 		return {
 			init: function(jqSelector) {
 				console.log("init autocomplete helper called with jqSelector: ", jqSelector);
-				$tagSelector = $(jqSelector);
+				$tagSelector = ensureInPage(jqSelector, "autocompleteHelper");
 				autocomplete = $tagSelector.chosen(defaultOptions);
 
 				this.updateOptions = function(newLookupOptions) {
