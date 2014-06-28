@@ -719,20 +719,20 @@
 
 
 	function init(features) {
-		var enableFeaturesByURL;
+		var FEATURE_NAMES = ["stateDescriptor", "callToAction", "search", "shareableURLs", "autocomplete"],
+ 			enableFeaturesByURL;
 
 		console.log("Initializing App.Discover");
 
 		features = features || {};
 
 		enableFeaturesByURL = function() {
-			FEATURE_NAMES = ["autocomplete", "shareableURLs"];
 			$.each(FEATURE_NAMES, function(index, featureName) {
 				if (location.search.indexOf(featureName) >= 0) {
 					features[featureName] = true;
 				}
 			});
-		}
+		};
 		enableFeaturesByURL();
 
 		$docsList.on("click", "input[name='filterByTag']", function($event) {
