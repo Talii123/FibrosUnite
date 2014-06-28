@@ -7,7 +7,9 @@ $(function() {
 		$event.preventDefault();
 	})
 
-
+	$("body").on("click", ".button.close", function() {
+		$(this).parent().slideUp();
+	});
 
 
 	/*  PROTOTYPE code probably no longer needed
