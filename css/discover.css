@@ -232,7 +232,8 @@ a {
 }
 .button.close {
   float: right;
-  margin-left: 18px
+  margin-left: 18px;
+  cursor: pointer;
 }
 .entry {
     margin: 0 0.5em 0.85em 0.25em;
@@ -249,12 +250,13 @@ span.category {
     font-weight: bold;
 }
 #main {
-    overflow-y: inherit;
+    overflow-y: hidden !important;
 }
 #documentsListing {
     height: 95%;
     overflow-y: auto;
 }
+#message { display: none;}
 .cta {
   margin-left: 10px;
   /* merge these with other rules */

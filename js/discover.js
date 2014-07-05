@@ -7,12 +7,7 @@
 		HAS_OWN = Object.prototype.hasOwnProperty,
 		filteredTagsMap = {},
 
-		urlHelper,
 		autocompleteHelper,
-		stateDescriptor,
-		callToActionHelper,
-		searchHelper,
-
 
 		TAG_TO_TAG_GROUP_MAP = {
 			"Surgery": "Treatments",
@@ -162,6 +157,7 @@
 	function makeCallToActionHelper() {
 		var DEFAULT_CALL_TO_ACTION = "Click on a title to see the document",
 			CALL_TO_ACTION_CLASS = "ctaHighlighted",
+			$MSG_BOX = $("#message"),
 			$CALL_TO_ACTION = ensureInPage("#message .cta", "callToActionHelper"),
 			TITLES_SELECTOR = ".title > h2 > a";
 
@@ -190,6 +186,7 @@
 		return {
 			init : 	function() {
 						bindHandlers();
+						$MSG_BOX.show();
 					},
 			setCTA: function(ctaHTML) {
 						$CALL_TO_ACTION.html(ctaHTML);
@@ -200,7 +197,7 @@
 		};
 	}
 
-	function makeSearchHelper(openSearchInSamePage) {
+	function makeSearchHelper(callToActionHelper, openSearchInSamePage) {
 		var FB_SEARCH_BASE_URL =
 				"https://www.facebook.com/groups/fibrolamellar/search/?query=",
 			DEFAULT_CTA_MSG = "Click here to search our groups for posts matching those tags.",
@@ -719,21 +716,68 @@
 
 
 	function init(features) {
-		var FEATURE_NAMES = ["stateDescriptor", "callToAction", "search", "shareableURLs", "autocomplete"],
- 			enableFeaturesByURL;
+		var FEATURES = {
+				"stateDescriptor" : {
+					name: "state descriptor"
+					, builder: makeStateDescriptor
+				}
+				, "callToAction" : {
+					name: "call to action helper"
+					, builder: makeCallToActionHelper
+				}
+				, "search" : {
+					name: "search helper"
+					/* this should be simplified/generalized */
+					, builder: function() {
+						var callToActionHelper = FEATURES["callToAction"],
+							instance;
+						
+						if (callToActionHelper && callToActionHelper.instance) {
+							return makeSearchHelper(callToActionHelper.instance);
+						} else if (callToActionHelper) {
+							callToActionInstance = callToActionHelper.builder();
+							callToActionInstance.init();
+							return makeSearchHelper(callToActionInstance);
+						} else {
+							console.error("Cannot create a search helper without a call to action helper!");
+						}
+					}
+				}
+				, "shareableURLs" : {
+					name: "shareable URLs"
+					, builder: makeUrlHelper
+				}
+				, "autocomplete" : {
+			/*		name: "state descriptor"
+					, builder: makeStateDescriptor*/
+				}
+			},
+ 			setupFeature;
 
 		console.log("Initializing App.Discover");
 
 		features = features || {};
 
-		enableFeaturesByURL = function() {
-			$.each(FEATURE_NAMES, function(index, featureName) {
-				if (location.search.indexOf(featureName) >= 0) {
-					features[featureName] = true;
-				}
-			});
-		};
-		enableFeaturesByURL();
+		function enableFeatures (featureName, isEnabled) {
+			var feature = FEATURES[featureName];
+			if (typeof feature != "undefined") {
+				feature.enabled = isEnabled;
+			} else {
+				console.error("'" + featureName + "' is not a valid feature");
+			}
+		}
+
+		function enableFeaturesByURL (featureName) {
+			var feature;
+			if (location.search.indexOf(featureName) >= 0) {
+				feature = FEATURES[featureName];
+				feature.enabled = true;
+				feature.enabledByUrl = true;
+			}
+		}
+
+		$.each(features, enableFeatures);
+		$.each(FEATURES, enableFeaturesByURL);
 
 		$docsList.on("click", "input[name='filterByTag']", function($event) {
 			var tagClicked;
@@ -764,7 +808,32 @@
 			$("#helpText").slideToggle();
 		});
 
-		if (features.stateDescriptor) {
+		setupFeature = function(featureID, featureDefinition) {
+			var builder,
+				instance;
+
+			if (!featureDefinition) {
+				console.error("Invalid feature definition for feature: ", featureID);
+				return;
+			}
+			if (!featureDefinition.enabled) {
+				console.log("Not enabling feature '" + featureID + "'");
+				return;
+			}
+
+			console.log("setting up feature " + featureDefinition.name + "...");
+			instance = featureDefinition.builder();
+			instance.init();
+			featureDefinition.instance = instance;
+			console.log("DONE setting up feature " + featureDefinition.name);
+		}
+
+		// TODO: clean this up so don't have to remove autocomplete and handle it differently
+		autoCompleteFeature = FEATURES.autocomplete;
+		delete FEATURES.autocomplete;
+		$.each(FEATURES, setupFeature);
+
+/*		if (features.stateDescriptor) {
 			console.log("enabling state descriptor...");
 			stateDescriptor = makeStateDescriptor();
 			stateDescriptor.init();
@@ -785,9 +854,10 @@
 		if (features.shareableURLs) {
 			urlHelper = makeUrlHelper(),
 			urlHelper.init();			
-		}
+		}*/
 
-		if (features.autocomplete) {
+		//if (features.autocomplete) {
+		if (autoCompleteFeature.enabled) {
 			console.log("enabling autocomplete...");
 
 			$.getScript("js/vendor/chosen.jquery.min.js").done(function() {
@@ -800,6 +870,7 @@
 			console.log("NOT enabling autocomplete.");
 		}
 
+		$("body").on("click", ".button.close", makeCloseAndFillFunc($("#message"), $("#documentsListing"), $("#main")));
 
 		$("#loadingDiv").hide();
 		$docsList.show();
