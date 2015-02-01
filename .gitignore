@@ -2,4 +2,6 @@ backup/**
 intermediate/**
 noUpload/**
 war/**
+src/**
 *.zip
+.DS_Store
