@@ -1,0 +1,21 @@
+
+.truncated + .edit.control {
+	display: none;
+}
+
+.notTruncatable + .edit.control {
+	position: static;
+	display: inline;
+}
+
+.t {
+	width: 85%;
+	display: inline-block;
+}
+
+.t.truncated {
+	max-height: 1.3em;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}

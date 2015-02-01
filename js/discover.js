@@ -1,141 +1,377 @@
 
 
 (function($) {
-	var $docsList = $("#documentsListing"),
-		$ALL_ENTRIES = $(".entry", "#documentsListing"),
-		ADD_TAG_FILTER_SELECTOR_ID = "AddTagFilterSelector",
-		HAS_OWN = Object.prototype.hasOwnProperty,
-		filteredTagsMap = {},
+	var MAIN_HEIGHT
+		, $docsList = $("#documentsListing")
+		, $ALL_ENTRIES = $(".entry", "#documentsListing")
+		, ADD_TAG_FILTER_SELECTOR_ID = "AddTagFilterSelector"
+		, HAS_OWN = Object.prototype.hasOwnProperty
+		, BASE_DIR = location.protocol.charAt(0) === 'h' ? "" : ".."
+		//, MODULES_DIR_ID = "f38196f"
+		, filteredTagsMap = {}
 
-		urlHelper,
-		autocompleteHelper,
-		stateDescriptor,
-		callToActionHelper,
-		searchHelper,
+		, FEATURES = {
+			"suggestEdit" : {
+				name: "suggest an edit"
+				, builder: makeSuggestEditHelper
+			}
+			, "toolTips" : {
+				name: "tool tip helper"
+				, builder: makeToolTipHelper
+			}
+			, "truncation" : {
+				name: "truncation helper"
+				, builder: makeTrucationHelper
+			}
+			, "stateDescriptor" : {
+				name: "state descriptor"
+				, builder: makeStateDescriptor
+			}
+			, "callToAction" : {
+				name: "call to action helper"
+				, builder: makeCallToActionHelper
+			}
+			, "search" : {
+				name: "search helper"
+				/* this should be simplified/generalized */
+				, builder: function() {
+					var callToActionHelper = FEATURES["callToAction"],
+						instance;
+
+					// add in this extra CTAHelper while testing the two versions
+					var lhnCTAHelper = makeCallToActionHelper('#searchFB', true);
+					lhnCTAHelper.init();
+					makeSearchHelper(lhnCTAHelper).init();
+
+					// WHY ARE WE REQUIRING AN EXISTING CTA HELPER?					
+					if (callToActionHelper && callToActionHelper.instance) {
+						return makeSearchHelper(callToActionHelper.instance);
+					} else if (callToActionHelper) {
+						callToActionInstance = callToActionHelper.builder();
+						callToActionInstance.init();
+						return makeSearchHelper(callToActionInstance);
+					} else {
+						console.error("Cannot create a search helper without a call to action helper!");
+					}
+
+				}
+			}
+			, "shareableURLs" : {
+				name: "shareable URLs"
+				, builder: makeUrlHelper
+			}
+			, "autocomplete" : {
+				requires: {
+					test: 	function() {
+								return typeof $.prototype.chosen == "function";
+							}
+					, url: 	BASE_DIR + "/js/vendor/chosen.jquery.min.js"
+				}
+				, name: "autocomplete helper"
+				, builder: function() {
+					var initializer;
+					console.log("Chosen loaded.");
+					autocompleteHelper = makeAutocompleteHelper();
+					initializer = autocompleteHelper.init;
+					autocompleteHelper.init = function() {
+						initializer.call(autocompleteHelper, "#"+ADD_TAG_FILTER_SELECTOR_ID);
+					}
+					console.log("autocomplete is enabled");				
+					return autocompleteHelper;
+				}
+			}
+			, "glossary" : {
+				requires: {
+					test: function() {
+						instance = FEATURES["glossary"].instance;
+						return instance != null && instance.isLoaded();
+					}
+					, url: BASE_DIR + "/js/glossary.js"
+				}
+				, name: "glossary"
+				, builder: makeGlossary
+			}
+			, "websiteTour" : {
+				requires: {
+					test: function() {
+						return typeof tour === "function";
+					}
+					, url: (function() {
+						return BASE_DIR ? 
+							 BASE_DIR + "/js/modules/websiteTour.js" :
+							 "/js/" + MODULES_DIR_ID + "/websiteTour.js" ;
+					})()
+				}
+				, name: "websiteTour"
+				, builder: function() {  //makeDiscoverTour
+					var TOURS_Z_INDEX = 10002
+						, DOCUMENTS_TOUR_ID = 'v1_documents'
+						, TOUR_ACTION_LINK_EL$ = '#help .helpLink'
+						, tour
+						, tourHelper
+						;
+
+					function setupTourActionLink(linkText, action) {
+						$(TOUR_ACTION_LINK_EL$)
+							.text(linkText)
+							.off('click')
+							.one('click', function() {
+								tour = tourHelper.getTourForID(DOCUMENTS_TOUR_ID, getDocumentsTour());
+								tour[action]();
+						});
+					}
+
+					function getDocumentsTour() {
+						var truncationToggler
+							, $firstEntry
+							, options
+							, jBoxDefs
+							, $KayteDoc = $docsList.find('#182099078511017');
+
+						// not really; only temporary
+						$firstEntry = $('#documentsListing .entry:nth-of-type(1)');
+						//$firstEntry = $('#430857446968511');
+
+						truncationToggler = function() {
+							this.options.target.trigger('click');
+							this.options.target = this.options.target.hasClass('expander') ?
+								$('.truncation.control.collapser', $firstEntry) :
+								$('.truncation.control.expander', $firstEntry);
+						};
+
+						options = {			
+							zIndex: TOURS_Z_INDEX
+							, embedControls: true
+							, showTourController: true
+							, stepCountLocation: 'footer'
+							, stepBox: {
+								width: $KayteDoc.width()
+							}
+							, tourActionLinkEl$: TOUR_ACTION_LINK_EL$
+						};
 
 
-		TAG_TO_TAG_GROUP_MAP = {
-			"Surgery": "Treatments",
-			"Chemo": "Treatments",
-			"Radiation": "Treatments",
-			"Chemoembolization / T.A.C.E": "Treatments",
-			"Radioembolization": "Treatments",
-			"Ethanol Embolization": "Treatments",
-			"Embolization": "Treatments",
-			"Immunotherapy": "Treatments",
-			"Bone Marrow Transplantation": "Treatments",
-			"Alternative Therapy": "Treatments",
-			"Clinical Trials": "Treatments",
-			"Nutrition": "General Knowledge and Tips",
-			"Exercise": "General Knowledge and Tips",
-			"Emotional Support": "General Knowledge and Tips",
-			"Caring for Someone Fighting Fibrolamellar": "General Knowledge and Tips",
-			"Comforting Someone After the Loss of a Loved One": "General Knowledge and Tips",
-			"Doing Your Own Research on Fibrolamellar": "General Knowledge and Tips",
-			"Advocating for Yourself or a Loved One": "General Knowledge and Tips",
-			"\"5FU\"/Fluorouracil + \"Intron\"/Interferon Alpha": "Chemotherapy",
-			"\"5FU\"/Fluorouracil + \"Eloxatin\"/Oxaliplatin": "Chemotherapy",
-			"\"5FU\"/Fluorouracil ": "Chemotherapy",
-			"\"Nexavar\"/Sorafenib + \"Avastin\"/Bevacizumab": "Chemotherapy",
-			"\"Nexavar\"/Sorafenib": "Chemotherapy",
-			"\"Xeloda\"/Capecitabine": "Chemotherapy",
-			"\"Platinol\"/Cisplatin": "Chemotherapy",
-			"\"Sutent\"/Sunitinib": "Chemotherapy",
-			"\"AVATAR\" (\"Avastin\"/Bevacizumab + \"Tarceva\"/Erlotinib)": "Chemotherapy",
-			"\"Tarceva\"/Erlotinib": "Chemotherapy",
-			"\"GEMOX\" (\"Gemzar\"/Gemcitabine + \"Eloxatin\"/Oxaliplatin)": "Chemotherapy",
-			"\"Gemzar\"/Gemcitabine + \"Eloxatin\"/Oxaliplatin + \"Avastin\"/Bevacizumab": "Chemotherapy",
-			"\"Gemzar\"/Gemcitabine": "Chemotherapy",
-			"\"Adriamycin\"/Doxorubicin + \"Platinol\"/Cisplatin": "Chemotherapy",
-			"\"Adriamycin\"/\"Doxil\"/Doxorubicin": "Chemotherapy",
-			"\"Affinitor\"/Everolimus": "Chemotherapy",
-			"PIAF - Platinum Interferon Adriamycin Fluorouracil": "Chemotherapy",
-			"\"Avastin\"/Bevacizumab": "Chemotherapy",
-			"Linifanib": "Chemotherapy",
-			"\"Camptosar\"/Irinotecan": "Chemotherapy",
-			"\"Oncovin\"/Vincristine": "Chemotherapy",
-			"Mouth Sores": "Symptoms and Side Effects",
-			"Nausea": "Symptoms and Side Effects",
-			"Fatigue": "Symptoms and Side Effects",
-			"Loss of Appetite": "Symptoms and Side Effects",
-			"Problems with Hands and Feet": "Symptoms and Side Effects",
-			"Jaundice (yellowing of skin or eyes)": "Symptoms and Side Effects",
-			"Abdominal Pain": "Symptoms and Side Effects",
-			"Ache and Pains": "Symptoms and Side Effects",
-			"Neuropathy (loss of feeling in fingers or toes)": "Symptoms and Side Effects",
-			"Thrush (white tongue)": "Symptoms and Side Effects",
-			"Blood Clots": "Symptoms and Side Effects",
-			"Lymphedema (Swelling)": "Symptoms and Side Effects",
-			"Changes in Sense of Taste (e.g. a metal taste in your mouth)": "Symptoms and Side Effects",
-			"High Ammonia Levels": "Symptoms and Side Effects",
-			"Managing Catheters/Drains": "Symptoms and Side Effects",
-			"Ascites": "Symptoms and Side Effects",
-			"Abscess": "Symptoms and Side Effects",
-			"Weight Loss": "Symptoms and Side Effects",
-			"Weight Gain": "Symptoms and Side Effects",
-			"Bowel Obstruction": "Symptoms and Side Effects",
-			"Fever": "Symptoms and Side Effects",
-			"Diarrhea": "Symptoms and Side Effects",
-			"Rashes": "Symptoms and Side Effects",
-			"Itchiness": "Symptoms and Side Effects",
-			"Hair Loss": "Symptoms and Side Effects",
-			"Vomiting": "Symptoms and Side Effects",
-			"Low Blood Cell Counts (Neutropenia, Anemia)": "Symptoms and Side Effects",
-			"Heartburn": "Symptoms and Side Effects",
-			"Black Stools": "Symptoms and Side Effects",
-			"External Beam/Proton Radiation": "Radiation",
-			"Y90/Sirspheres/Therospheres - Radioactive Beads": "Radiation",
-			"RFA (Radiofrequency Ablation)": "Radiation",
-			"Cyberknife": "Radiation",
-			"Brachytherapy": "Radiation",
-			"Liver Surgery": "Surgery",
-			"Liver Transplantation": "Surgery",
-			"Surgery to Remove Tumors Outside of the Liver": "Surgery",
-			"Laproscopic or Minimally Invasive Surgery": "Surgery",
-			"Laser Surgery": "Surgery",
-			"Recurrence": "Disease Stage",
-			"Inspiration": "General Knowledge and Tips",
-			"Advocacy": "General Knowledge and Tips",
-			"Metastases": "Disease Stage",
-			"No Disease Outside the Liver": "Disease Stage",
-			"Second Opinions": "General Knowledge and Tips",
-			"Cysts": "Disease Stage",
-			"Paracentesis": "Symptoms and Side Effects",
-			"Diuretics": "Symptoms and Side Effects",
-			"Infection": "Symptoms and Side Effects",
-			"Edema": "Symptoms and Side Effects",
-			"Lasix": "Symptoms and Side Effects",
-			"Compression Socks": "Symptoms and Side Effects",
-			"Albumin": "Symptoms and Side Effects",
-			"Low Sodium": "Symptoms and Side Effects",
-			"Tumor Growth": "Disease Stage",
-			"Tumor Shrinkage": "Disease Stage",
-			"Stable Disease": "Disease Stage",
-			"Liver": "Disease Sites/Locations",
-			"Lymph Nodes": "Disease Sites/Locations",
-			"Abdomen": "Disease Sites/Locations",
-			"Chest": "Disease Sites/Locations",
-			"Lungs": "Disease Sites/Locations",
-			"Diaphragm": "Disease Sites/Locations",
-			"Bones": "Disease Sites/Locations",
-			"Brain": "Disease Sites/Locations",
-			"Pancreas": "Disease Sites/Locations",
-			"Gall Bladder": "Disease Sites/Locations",
-			"Portal Vein": "Disease Sites/Locations",
-			"Ovaries": "Disease Sites/Locations",
-			"Kidney": "Disease Sites/Locations",
-			"Bladder": "Disease Sites/Locations",
-			"Stomach": "Disease Sites/Locations",
-			"Spleen": "Disease Sites/Locations",
-			"Stage I": "Disease Stage",
-			"Stage II": "Disease Stage",
-			"Stage III": "Disease Stage",
-			"Stage IV": "Disease Stage"
-		};
+						jBoxDefs = [
+							{
+								content: 'In the middle of the page is a collection of document summaries. Each summary corresponds to a document or file that a member of our Facebook group has shared.'
+								, title: 'Document Summaries'
+								, width: $('#sidebar').outerWidth()
+								//, attach: $('#sidebar')
+								, target: $docsList
+								, position: { x: 'left ', y: 'top'}
+								, offset: { y: 68 }
+								, outside: 'x'
+								, pointTo: 'right'
+								/*, onOpen: function() {
+									$(this).trigger('click');
+								}
+								/*, position: { y: 'top' }
+								, outside: 'y'*/
+								, onNext: function() {
+									$docsList.scrollTop($KayteDoc.position().top);
+								}
+							}
+							, {
+								content: "If you click the title of a summary, you will be taken directly to that document - but ONLY if you are a member of our group AND logged in to Facebook. <strong>Only group members can view the documents!</strong><br/><br/>If you are a member but not logged in, then all you have to do is follow Facebook's prompts to log in, and once done, you will be taken to the document you chose."
+								, title: 'Viewing Documents'
+								, target: $('.title a', $KayteDoc)
+								, position: { y: 'bottom' }
+								, offset: { x: -85 }
+								, pointer: 'left:10'
+								, outside: 'y'
+								/*
+								, target: $('.title a', $firstEntry)
+								, width: $('.title a', $firstEntry).width()
+								, position: { x: 'right' }
+								, outside: 'x'
+								*/
+							}
+							, {
+								content: "Below the title of each document summary is a collection of tags. These tags help you see some of the key topics mentioned in that document. You can click on a tag to hide all documents that don't have that tag. If you click on the tag a second time, it undoes that selection, and adds all those hidden documents back to the list."
+								, title: 'Tags'
+								, width: $KayteDoc.outerWidth()
+								, target: $('.tags', $KayteDoc)
+								, position: { y: 'bottom' }
+								, offset: { y: -7 }
+								, outside: 'y'
+							}
+							, {
+								/*content: "See the tag for &quot;Nexavar&quot;/Sorafenib? See the document below called _____. Click on the tag now."
+								, title: 'Filtering by clicking tags'*/
+								//, target: $('input[value$="Sorafenib"]', $firstEntry)
+								content: "See the tag for &quot;Liver Surgery&quot;? See the document below called _____. Click on the tag now."
+								, target: $('input[value$="Liver Surgery"]', $KayteDoc)
+								, position: { y: 'bottom' }
+								, repositionOnContent: true
+								, outside: 'y'
+								//, offset: { x: -250 }
+								, task: {
+									onStart: function(task) {
+										var jBox = this;
+
+										function taskHandler() {
+											alert("I was clicked!!");
+											// need to do a close/open cycle to 
+											// trigger repositioning IF the modal 
+											// doesn't change size
+											jBox.close();
+											task.complete();
+
+											// handy trick to ensure underlying DOM 
+											// changes before Modal is recomputed
+											setTimeout(function() {
+												jBox.open();
+											}, 0);
+										}
+										jBox.taskHandler = taskHandler;
+										jBox.options.target.one('click', taskHandler);
+									}
+									, onUnstart: function(task) {
+										var jBox = this;
+										alert("onUnstart!!!");
+										jBox.options.target.off(
+											'click', 
+											jBox.taskHandler
+										);
+									}
+									, onComplete: function(task) {
+										var $content
+											, jBox = this;
+
+										$content = $(jBox.content.prop("outerHTML"));
+										$content.html("You did it!!");
+											/*.prepend("You did it!! ")
+											.find(".modal-footer")
+											.remove();*/
+
+										jBox.updateContent($content);
+									}
+								}
+								, onOpen: function() {
+									var $derrickStory = $("#490803154307273");
+
+									this.options.defaultOnOpen.call(this);
+									this.lightOnTarget($derrickStory);
+									// provide default behaviour so it doesn't get overriden
+									//this.lightOnTarget(this.options.target);
+
+								}
+								, onClose: function() {
+									var $derrickStory = $("#490803154307273");
+									
+									this.lightOffTarget($derrickStory);
+									// provide default behaviour so it doesn't get overriden
+									this.options.defaultOnClose.call(this);
+									//this.lightOffTarget(this.options.target);
+
+								}
+							}
+							, {
+								content: "Below the tags is a short summary of what the document is about. Only one line is shown by default. If the description is longer than one line than whatever does not fit is hidden. You can click the 'read more' button to see the rest of the description."
+								, title: 'Description'
+								, target: $('.description', $firstEntry)
+								, position: { y: 'bottom' }
+								, outside: 'y'
+							}
+							, {
+								content: "If the description is long, you have to click on 'Read More' to find the link. If the document summary fits in one line, you will see the 'Suggest an Edit' link already there."
+								, title: 'Read More'
+								, width: $firstEntry.width()
+								, target: $('.truncation.control.expander', $firstEntry)
+								, pointer: 'right'
+								, position: { y: 'bottom' }
+								, outside: 'y'
+								, onNext: function() {
+									console.log("onNext();")
+									$('.truncation.control.expander', $firstEntry).trigger("click");
+								}
+							}
+							, {
+								content: "This site is meant to be community driven - we want YOU to help make sure the content is accurate and high quality. For that reason there is a link called 'Suggest an Edit' on each document summary. If the description is long, you have to click on 'Read More' to find the link. If the document summary fits in one line, you will see the 'Suggest an Edit' link already there."
+								, title: 'Suggest An Edit'
+								, width: $firstEntry.width()
+								, target: $('.edit.control', $firstEntry)
+								, pointer: 'right'
+								, position: { y: 'bottom' }
+								, outside: 'y'
+								, onPrev: function() {
+									console.log("onPrev();")
+									$('.truncation.control.collapser', $firstEntry).trigger("click");
+								}
+							}
+							, {
+								content: 'The sidebar contains controls to help you find the documents you are looking for. Example: click on the dropdown box where it says "Surgery" and choose an option (e.g. "Immunotherapy") and then click "Add Filter."'
+								//, target: $("#documentsListing .entry:nth-of-type(2)")
+								, title: 'Sidebar'
+								, target: $('#sidebar')
+								, onOpen: function() {
+									this.options.defaultOnOpen.call(this);
+									$("#filterBox button").one('click', function() {
+										alert("I was added by the tour!");
+									});
+								}
+								, position: { x: 'right', y: 'top' }
+								, offset: { y: 60 }
+								, outside: 'x'
+							}
+						    , {
+						    	content: 'Congratulations! You have completed the tour!!'
+						    }
+						];
+
+						return {
+							options: options
+							, jBoxDefs: jBoxDefs
+						};
+					}
+					return {
+						init: function() {
+							tourHelper = websiteTour(TOURS_Z_INDEX);
+							if (tourHelper.isTourCompleted(DOCUMENTS_TOUR_ID)) {
+								console.log("User has completed tour ", DOCUMENTS_TOUR_ID, " before. Not starting tour now.");
+								setupTourActionLink('Restart Tour', 'restart');
+							} else if (!tourHelper.isTourSkipped(DOCUMENTS_TOUR_ID)) {
+								tour = tourHelper.getTourForID(DOCUMENTS_TOUR_ID, getDocumentsTour());
+								if (tour.isStarted()) {	  // tour is paused
+									//tour.resume()
+									tour.confirmBeforeResuming();
+								} else {
+									tour.confirmBeforeStarting();
+								}
+							} else {
+								console.log("User has skipped tour ", DOCUMENTS_TOUR_ID, " for this session.");
+								if (tourHelper.isTourStarted(DOCUMENTS_TOUR_ID)) {
+									console.log("User has already started tour ", DOCUMENTS_TOUR_ID, " so set link to resume");
+									setupTourActionLink('Resume Tour', 'resume');
+								}
+								else {
+									console.log("User has not started tour ", DOCUMENTS_TOUR_ID, " so set link to start");
+									setupTourActionLink('Start Tour', 'start');
+								}								
+							}
+						}
+					}
+				} 
+			}
+		}
+
+		, autocompleteHelper
+		, TAG_TO_TAG_GROUP_MAP;
 
 	window.App = window.App || {};
 	window.App.Discover = window.App.Discover || {};
 	window.App.Discover.init = init;
+
+	window.setGlossaryTerms = function(mapOfTerms) {
+		FEATURES.glossary.terms = mapOfTerms;
+		window.setGlossaryTerms = function(){};
+	}
+
+	window.setTagToTagGroup = function(mapOfTagsAndTagGroups) {
+		TAG_TO_TAG_GROUP_MAP = mapOfTagsAndTagGroups;
+		window.setTagToTagGroup = function(){};
+	}
+
 	return; 
 
 	function getAppliedTags() {
@@ -159,60 +395,272 @@
 		return $jqElement;
 	}
 
-	function makeCallToActionHelper() {
-		var DEFAULT_CALL_TO_ACTION = "Click on a title to see the document",
-			CALL_TO_ACTION_CLASS = "ctaHighlighted",
-			$CALL_TO_ACTION = ensureInPage("#message .cta", "callToActionHelper"),
-			TITLES_SELECTOR = ".title > h2 > a";
+	function makeSuggestEditHelper() {
+		return {
+			init: function() {
+				$(".entry .description").each(function() {
+					var $this = $(this),
+						id = $this.closest(".entry").attr("id"),
+						href = "/discover/"+id+"/description/edit",
+						$suggestEditLink;
 
+					$suggestEditLink = $("<a>Suggest an Edit</a>").attr({
+						"href": href,
+						"class": "edit control",
+						"target": "_blank"
+					}).appendTo($this);
+				});
+			}
+		};
+	}
+
+	function makeTrucationHelper() {
+		var NEWLINE_REPLACEMENT_CHAR = "¶"
+		  	, NEWLINE_REPLACEMENT_MATCHER = RegExp("(\s)?" + NEWLINE_REPLACEMENT_CHAR + "(\s)?", "g")
+			//, CSS_TO_ADD = "/* inserted by truncation */"
+			;
+
+		/*function insertCSS() {
+			$("head").append("<style>"+CSS_TO_ADD+"</style>");
+		}*/
+
+		function createReadMoreHTML(isHidden) {
+			return "<span class='truncation control expander" + 
+				(isHidden ? " hidden " : "") +
+			 	"'>Read More</span>";
+		}
+
+		function createReadLessHTML(isHidden) {
+			return "<span class='truncation control collapser" + 
+				(isHidden ? " hidden " : "") +
+				"'>Read Less</span>";
+		}
+
+		function insertHTML() {
+			var HTML_TO_ADD = createReadLessHTML(true) + createReadMoreHTML(false);
+			$("#documentsListing .description").prepend(HTML_TO_ADD);
+		}
+
+		function onReadMore($event) {
+			var $src = $($event.target);
+
+			expand($src.nextAll(".t"));
+			$src.parent().find(".control").removeClass("hidden");
+			//$src.prev(".truncation.collapser").removeClass("hidden");
+			$src.addClass("hidden");
+		}
+
+		function onReadLess($event) {
+			var $src = $($event.target);
+
+			truncate($src.nextAll(".t"));
+			$src.parent().find(".control").addClass("hidden");
+			$src.next(".truncation.expander").removeClass("hidden");
+			//$src.addClass("hidden");
+		}
+
+		function truncate($el) {
+			$el.html($el.html().replace(/<br(\s)*(\/)?>/g, " " + NEWLINE_REPLACEMENT_CHAR + " "));
+			$el.addClass("truncated");
+		}
+
+		function expand($el) {
+			$el.html($el.html().replace(NEWLINE_REPLACEMENT_MATCHER, "<br/>"));
+			$el.removeClass("truncated");
+		}
+
+		function bindHandlers() {
+			$docsList.on("click", ".truncation.expander", onReadMore);
+			$docsList.on("click", ".truncation.collapser", onReadLess);
+		}
+
+		return {
+			init: function() {
+				//insertCSS();
+				insertHTML();
+				bindHandlers();
+				$("#documentsListing .t").each(function() {
+					var $this = $(this),
+						heightBeforeTruncation = $this.height();
+
+					truncate($this);
+					if ($this.height() * 1.5 > heightBeforeTruncation) {
+						$this.prevAll(".truncation.control").remove();
+						expand($this);
+						$this.addClass("notTruncatable");
+					}
+				});
+			}
+		};
+	}
+
+	function makeToolTipHelper() {
+		var updateTitle = (function() {
+			var UNSELECTED_TITLE = "Click to hide all documents not tagged with '"
+				, SELECTED_TITLE = "Click to stop hiding documents not tagged with '"
+				, SELECTED_CLASS = "selected"
+				, END_OF_LINE = "'";
+
+			return function() {
+				var $el = $(this);
+				if ($el.hasClass(SELECTED_CLASS)) {
+					$el.attr('title', SELECTED_TITLE + $el.val() + END_OF_LINE);
+				}
+				else {
+					$el.attr('title', UNSELECTED_TITLE + $el.val() + END_OF_LINE);
+				}
+			}
+		})();
+
+		function updateTitleHandler($event, tagToggled) {
+			$("[name='filterByTag']")
+				.filter("[value='"+tagToggled+"']")
+				.each(updateTitle);
+		}
+
+		function bindHandlers() {
+			$docsList.on("selectTag", updateTitleHandler);
+			$docsList.on("unselectTag", updateTitleHandler);			
+		}
+
+		return {
+			init: function() {
+				$("[name='filterByTag']").each(updateTitle);
+				bindHandlers();
+			}
+		};
+	}
+
+	function makeCallToActionHelper(parentSelector, hideWhenEmpty) {
+		var DEFAULT_CTA = "Click on a title to see the document"
+			, CTA_CLASS = "ctaHighlighted"
+			, $parentEL
+			, $ctaEL
+			, TITLES_SELECTOR = ".title > h2 > a"
+			;
+
+		$parentEL = parentSelector ? $(parentSelector) : $("#message");
+		$ctaEL = $parentEL.find('.cta');
 
 		function highlightTitles() {
-			$(TITLES_SELECTOR).addClass(CALL_TO_ACTION_CLASS)
+			$(TITLES_SELECTOR).addClass(CTA_CLASS)
 		}
 
 		function unhighlightTitles() {
-			$(TITLES_SELECTOR).removeClass(CALL_TO_ACTION_CLASS)
+			$(TITLES_SELECTOR).removeClass(CTA_CLASS)
 		}
 
 		function doWhenDefault(f) {
 			return function() {
-				if ($CALL_TO_ACTION.text() === DEFAULT_CALL_TO_ACTION) f();	
+				if ($ctaEL.text() === DEFAULT_CTA) f();	
 			}
 		}
 
 		function bindHandlers() {
-			$CALL_TO_ACTION.hover(
+			$ctaEL.hover(
 				doWhenDefault(highlightTitles),
 				doWhenDefault(unhighlightTitles)
 			);
 		}
 
+		function updateCallToAction(newCTAHtml) {
+			var oldCTAHtml = $ctaEL.html();
+
+			$ctaEL.html(newCTAHtml);
+			$ctaEL.trigger('change:cta', {
+				oldValue: oldCTAHtml
+				, newValue: newCTAHtml
+			});
+		}
+
 		return {
-			init : 	function() {
-						bindHandlers();
-					},
-			setCTA: function(ctaHTML) {
-						$CALL_TO_ACTION.html(ctaHTML);
-					},
-			reset: 	function() {
-						$CALL_TO_ACTION.html(DEFAULT_CALL_TO_ACTION);
+			init: function() {
+				bindHandlers();
+			}
+			, setCTA: function(ctaHTML) {
+				updateCallToAction(ctaHTML);
+				if (hideWhenEmpty) {
+					if (ctaHTML && ctaHTML.length) {
+						$parentEL.show();
 					}
+				}
+			}
+			, reset: function() {
+				if (hideWhenEmpty) {
+					$parentEL.hide();
+				}
+				else {
+					updateCallToAction(DEFAULT_CTA);
+				}
+			}
 		};
 	}
 
-	function makeSearchHelper(openSearchInSamePage) {
+	function makeSearchHelper(callToActionHelper, openSearchInSamePage) {
 		var FB_SEARCH_BASE_URL =
 				"https://www.facebook.com/groups/fibrolamellar/search/?query=",
 			DEFAULT_CTA_MSG = "Click here to search our groups for posts matching those tags.",
 			LINK_TEXT = "Click here",
 			TARGET_ATTR = !openSearchInSamePage ? "target='_blank'" : "";
 
+
+		function normalizeTag(tag) {
+			return tag.replace(/\s*\([^\)]*\)\s*/g, '')	// strip out parenthetical content
+					.replace(/\//g, ' ')
+					.replace(/\"/g, '')
+					.replace(/\'/g, '');
+
+		}
+
+		// not currently using because Facebook will 'AND' all terms together
+		// and this can reduce results - e.g. Adriamycin Doxil Doxorubicin
+		function getAllChemoVariations(tag) {
+			return normalizeTag(tag);
+		}
+
+		function getFirstVariantOnly(tag) {
+			var slashIndex = tag.indexOf('/');
+
+			if (slashIndex > 0) {
+				tag = tag.substring(0, slashIndex);
+			} 
+
+			return normalizeTag(tag.trim());
+		}
+
+		function getMoreCommon(chemo) {
+			var substitutionMap = {
+				'intron' : 'Interferon'
+				, 'adriamycin' : 'Doxorubicin'
+				, 'affinitor' : 'Everolimus'
+			};
+			// the map above is based on results from searching the fb group
+
+			getMoreCommon = function(chemo) {
+				return substitutionMap[chemo.toLowerCase()] || chemo;	
+			}
+			
+			return getMoreCommon(chemo);
+		}
+
 		function makeQuery() {
 			var appliedTags = getAppliedTags() || [];
 
-			appliedTags = appliedTags.join(',')
-				.replace("'", "")
-				.replace('"', '');
+			appliedTags = $.map(appliedTags, function(tag) {
+				if (tag.indexOf('+') > 0) {
+					return $.map(tag.split('+'), function(tag) {
+						return getMoreCommon(getFirstVariantOnly(tag));
+					}).join(' ');
+				}
+				else if (tag.indexOf('/') > 0) {
+					return getMoreCommon(getFirstVariantOnly(tag));
+				}
+				else {
+					tag = tag.replace(/\s*\([^\)]*\)\s*/g, '');
+					return (tag.indexOf(' ') > 0) ? '"' + tag + '"' : tag;
+				}
+			}).join(' ');
+
 			return FB_SEARCH_BASE_URL + encodeURIComponent(appliedTags);
 		}
 
@@ -246,18 +694,20 @@
 		}
 
 		return {
-			init: 	function() {
-						console.log("search cta is initializing..");
-						bindHandlers();
-						console.log("search cta is DONE initializing!");				
-					}
+			init: function() {
+				console.log("search cta is initializing..");
+				bindHandlers();
+				console.log("search cta is DONE initializing!");				
+			}
 		};
 	}
 
 	function makeStateDescriptor() {
-		var DEFAULT_STATE_DESCRIPTOR = "Showing all documents in our Facebook Group.",
-			STATE_TAG_CLASS = "describedTag",
-			$STATE_DESCRIPTOR = ensureInPage("#message .showing", "stateDescriptor");
+		var DEFAULT_STATE_DESCRIPTOR = "Showing all documents in our Facebook Group."
+			, STATE_TAG_CLASS = "describedTag"
+			, $stateEL = ensureInPage("#message .showing", "stateDescriptor")
+			, $MSG_BOX = $("#message")
+			;
 
 		function bindHandlers() {
 			$docsList.on("selectTag", updateStateDescriptor);
@@ -267,7 +717,8 @@
 		function updateStateDescriptor() {
 			var newShowingMessage,
 				appliedTags = [],
-				lastAppliedTag;
+				lastAppliedTag,
+				oldState;
 
 			newShowingMessage = "Now showing documents tagged with ";
 			appliedTags = getAppliedTags() || [];
@@ -291,24 +742,188 @@
 					break;
 			}
 
-			$STATE_DESCRIPTOR.html(newShowingMessage);
-		}
+			oldState = $stateEL.html();
+			$stateEL.html(newShowingMessage);
+			$stateEL.trigger('change:state', {
+				oldValue: oldState
+				, newValue: newShowingMessage
+			});
 
+			new jBox('Notice', {
+				content: newShowingMessage + " <a href='#'>Click here</a> to search our groups for posts matching those tags."
+				, position: { x: 'left', y: 'bottom'}
+			});
+		}
 
 		return {
 			init: function() {
 				console.log("state descriptor is initializing..");
 				bindHandlers();
+				$MSG_BOX.show();
 				console.log("state descriptor is DONE initializing!");				
 			}
 		};
 
 	}
 
+	// function isGlossaryLoaded() {
+	// 	return FEATURES["glossary"].instance.isLoaded();
+	// }
+
+	function makeGlossary() {
+		//var $el = $("<div id='glossaryPopUp'></div>");
+		var $el = $("#glossaryToolTip")
+			, isHoveringOnBox = false
+			, isHoverHandlerSet = false
+			, terms
+			, options = {
+				attach: $(".entry .description em")
+				, addClass: "glossaryToolTip"
+				//, closeOnMouseleave: true
+				, position: { x: 'center' }
+				, delayOpen: 200				
+			}
+			$jBox = $el.jBox('Tooltip', options);
+
+
+		function showGlossaryTip($event) {
+			var $src = $($event.target),
+				title = $src.text(),
+				content = $src.closest(".entry").data(title);
+
+			console.log("showGlossaryTip");
+
+			/*$jBox = new jBox('Tooltip', {
+				title: title,
+				content: content
+			});*/
+
+/*			$src.jBox("Tooltip", {
+				title: $src.data("title"),//terms["5FU"].name,
+				content: $src.data("content"),
+				closeOnMouseleave: true,
+				position: {
+					x: 'center'
+				}
+			});*/
+
+			if (typeof $jBox == "undefined") return;
+
+			console.log("$src: ", $src);
+			console.log("title: ", title);
+			console.log("content: ", content);
+
+			/*$jBox.open({
+				target: $src,
+				title: $src.data("title"),
+				content: $src.data("content"),
+				closeOnMouseleave: true,
+				position: {
+					x: 'center'
+				}
+			});
+*/
+			$jBox.setTitle(title);
+			$jBox.setContent(content);
+			$jBox.open({
+				target: $src
+				//, closeOnMouseleave: true
+			});
+
+			if (!isHoverHandlerSet) {
+				$(".glossaryToolTip").hover(function() {
+					console.log("isHoveringOnBox is true");
+					isHoveringOnBox = true;
+				}, function() {
+					console.log("isHoveringOnBox is false");
+					isHoveringOnBox = false;
+					console.log("closing....");
+					$jBox.close();
+				});
+
+				isHoverHandlerSet = true;				
+			}
+
+			$src.one("mouseleave", function($event) {
+				setTimeout(function() {
+					if (!isHoveringOnBox) {
+						console.log("closing..");
+						$jBox.close();
+					}
+				}, 100);
+			});
+
+			//if (typeof terms == "undefined") return;
+
+			/*$jBox.attach($src)
+			$jBox.setContent(terms[term].description);
+			$jBox.setTitle(term);
+			$jBox.open();
+
+			/*options.target = $src[0];
+			options.title = term;
+			options.content = terms[term].description;*/
+			/*$jBox.open({
+				target: $src,
+				title: term,
+				content: terms[term].description,
+				closeOnMouseleave: true,
+				position: {
+					x: 'center'
+				}				
+
+			});*/
+		}
+
+		function bindHandlers() {
+			//$("#documentsListing").on("click", ".entry .description em", showGlossaryTip);
+			$docsList.on("mouseenter", ".entry .description em", showGlossaryTip);
+		}
+
+		return {
+			init: function() {
+				//$el.appendTo("body");
+				terms = FEATURES.glossary.terms;
+					
+				//$jBox = new jBox('Tooltip');
+
+				bindHandlers();
+
+				$(".entry .description em").each(function() {
+					var $el = $(this),
+						term = $el.text(),
+						synonyms = terms[term].synonyms,
+						content = 
+							terms[term].description + 
+							(synonyms ? "<div>Synonyms: " + synonyms + "</div>" : "");
+
+					$el.closest(".entry").data(term, content);
+
+					/*$el.data("title", term);
+					$el.data("content", content);*/
+
+					/*$el.jBox("Tooltip", {
+						title: term,//terms["5FU"].name,
+						content: content
+						closeOnMouseleave: true,
+						position: {
+							x: 'center'
+						}
+					});*/
+				});
+			}
+			, isLoaded: function() {
+				return typeof FEATURES.glossary.terms != "undefined";
+			}
+		};
+	}
+
 	function makeAutocompleteHelper() {
 		var autocomplete,
 			$tagSelector,
-			defaultOptions = {};
+			defaultOptions = {
+				search_contains: true
+			};
 
 		return {
 			init: function(jqSelector) {
@@ -328,7 +943,7 @@
 				// is this needed? 
 				//this.updateOptions();
 			}
-		}
+		};
 	}
 
 	function makeUrlHelper() {
@@ -403,11 +1018,14 @@
 		}
 
 		function updateURL() {
-			location.hash = toQS();
+			// prepending '#' based on comments in Backbone that some browsers
+			// need it to work correctly
+			location.hash = '#' + toQS();
 		}
 
 		function addTagToUrl($event, aTagName) {
 			console.log("adding tag: ", aTagName);
+			$event.preventDefault();
 			if (typeof qsMap.tags === "undefined") qsMap.tags = [];
 
 			qsMap.tags.push(aTagName);
@@ -420,6 +1038,7 @@
 
 			console.log("removing tag: ", aTagName);
 
+			$event.preventDefault();
 			for (i=tags.length-1; i >= 0; --i) {
 				if (tags[i] === aTagName) {
 					tags.splice(i, 1);
@@ -529,13 +1148,17 @@
 				}
 
 				if (hasAllRequiredTags) {
-					$this.show();
+					//$this.show();
+					$this.removeClass('hidden');
 				}
 			});			
 		}
 		else {
 			$("#appliedTags .tagsList").hide();
-			$docsList.find(".entry").each(function() {$(this).show()});
+			//$docsList.find(".entry").each(function() {$(this).show()});
+			$docsList.find(".entry").each(function() {
+				$(this).removeClass('hidden');
+			});
 		}
 
 		rebuildTagSelector();
@@ -562,7 +1185,8 @@
 			return $(domElement).parents(".entry")[0];
 		});
 
-		$(".entry", $docsList).not($matchedDocs).hide();
+		//$(".entry", $docsList).not($matchedDocs).hide();
+		$(".entry", $docsList).not($matchedDocs).addClass('hidden');
 
 		rebuildTagSelector();
 
@@ -573,12 +1197,28 @@
 	}
 
 
-	function toggleTagFilter(aTagName) {
-		var $matchedDocs,
-			$matchedTags,
-			isSelected;
+	function toggleTagFilter(aTagName, $triggeringEvent) {
+		var $matchedDocs
+			, $msgBox = $("#message")
+			, $matchedTags
+			, $clickedEntry
+			, $offsetParent
+			, isSelected
+			, initialTop
+			, changeInTop
+			, initialHeight
+			, newHeight
+			, changeInHeight
+			;
+
 
 		$matchedTags = getMatchingTags(aTagName);
+
+		$clickedEntry = $($triggeringEvent.target).closest('.entry');
+		$offsetParent = $clickedEntry.offsetParent();
+
+		initialTop = $clickedEntry.position().top;		
+		initialHeight = $offsetParent.height();
 
 		//isSelected = $matchedTags.first().hasClass("selected");
 		isSelected = filteredTagsMap[aTagName]
@@ -587,7 +1227,14 @@
 		}
 		else {
 			unselectTag(aTagName);
-		}	
+		}
+
+		changeInTop = $clickedEntry.position().top - initialTop;
+		newHeight = MAIN_HEIGHT - $msgBox.outerHeight(true);
+		//changeInHeight = $offsetParent.height() - initialHeight;
+		changeInHeight = newHeight - initialHeight;
+		$offsetParent.height(newHeight);
+		$offsetParent.scrollTop($offsetParent.scrollTop() + changeInTop - changeInHeight);
 	}
 
 
@@ -718,22 +1365,21 @@
 	}
 
 
-	function init(features) {
-		var enableFeaturesByURL;
 
+	function savePageState() {
+		persistForSession('scrollTop', $docsList.scrollTop());
+	}
+
+	function loadPageState() {
+		$docsList.scrollTop(getPersistedForSession('scrollTop'));
+	}
+
+
+
+	function init(featuresToEnable) {
 		console.log("Initializing App.Discover");
 
-		features = features || {};
-
-		enableFeaturesByURL = function() {
-			FEATURE_NAMES = ["autocomplete", "shareableURLs"];
-			$.each(FEATURE_NAMES, function(index, featureName) {
-				if (location.search.indexOf(featureName) >= 0) {
-					features[featureName] = true;
-				}
-			});
-		}
-		enableFeaturesByURL();
+		MAIN_HEIGHT = $('#main').height();
 
 		$docsList.on("click", "input[name='filterByTag']", function($event) {
 			var tagClicked;
@@ -741,16 +1387,18 @@
 			$event.preventDefault();
 
 			tagClicked = this.value;
-			toggleTagFilter(tagClicked);
+			toggleTagFilter(tagClicked, $event);
+			//$($event.target).blur();
 		});
 
-		$("#appliedTags").on("click", "input[name='removeTagFilter']", function() {
-			unselectTag($(this).parent().data("tagName"));
+		$("#appliedTags").on("click", "input[name='removeTagFilter']", function($event) {
+			var tag = $(this).parent().data("tagName")
+			unselectTag(tag);
 		});
 
-		$("<button>Add Filter</button>")
+		$("<button class='add filter'>Add Filter</button>")
 			.on("click", function() {
-				var tagFilterSelector = $(this).closest("#sidebar").find("select#"+ADD_TAG_FILTER_SELECTOR_ID).get(0),
+				var tagFilterSelector = $(this).closest("#filterBox").find("select#"+ADD_TAG_FILTER_SELECTOR_ID).get(0),
 					tagToSelect = tagFilterSelector.value;
 
 				console.log("tagToSelect: ", tagToSelect);
@@ -759,50 +1407,40 @@
 			.insertBefore("#appliedTags .tagsList")
 			.before($(f_createTagSelectorHTML()).attr({"id" : ADD_TAG_FILTER_SELECTOR_ID}))
 			.after("<br/>");
+		$("<button class='reset filter'>Reset Filters</button>")
+			.on('click', function() {
+				$("[name='removeTagFilter']").trigger("click");
+			})
+			.insertAfter("#appliedTags .add.filter");
 		$(".helpLink").on("click", function($event) {
 			$event.preventDefault();
 			$("#helpText").slideToggle();
 		});
 
-		if (features.stateDescriptor) {
-			console.log("enabling state descriptor...");
-			stateDescriptor = makeStateDescriptor();
-			stateDescriptor.init();
-		}
+		$('body').on('click', '[href]', savePageState);
 
-		if (features.callToAction) {
-			console.log("enabling call to action helper...");
-			callToActionHelper = makeCallToActionHelper();
-			callToActionHelper.init();
-		}
-
-		if (features.search) {
-			console.log("enabling search helper...");
-			searchHelper = makeSearchHelper();
-			searchHelper.init();
-		}
-
-		if (features.shareableURLs) {
-			urlHelper = makeUrlHelper(),
-			urlHelper.init();			
-		}
-
-		if (features.autocomplete) {
-			console.log("enabling autocomplete...");
-
-			$.getScript("js/vendor/chosen.jquery.min.js").done(function() {
-				autocompleteHelper = makeAutocompleteHelper();
-				autocompleteHelper.init("#"+ADD_TAG_FILTER_SELECTOR_ID);
-				console.log("autocomplete is enabled");				
-			});
+		// IS THIS EVEN NEEDED NOW?!?
+		// todo replace this with something cleaner
+		if ($("#sidebar").css("display") === "none") {
+			//console.log("\n\n\n binding closeHandler \n\n\n");
+			$("body").on("click", ".button.close", closeHandler);
 		}
 		else {
-			console.log("NOT enabling autocomplete.");
+			//console.log("\n\n\n binding closeAndPullUpHandler \n\n\n");
+			$("body").on("click", ".button.close", closeAndPullUpHandler);
 		}
-
 
 		$("#loadingDiv").hide();
 		$docsList.show();
+		
+		initFeatures(FEATURES, featuresToEnable);
+
+		App.MobileMenu.init();
+
+		// wait til after features are completed; will only work for 
+		// synchronous features; if depends on an async feature, will need
+		// to bind to a promise
+		loadPageState();
 
 		console.log("Done initializing App.Discover");
 	}

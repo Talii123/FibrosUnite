@@ -13,6 +13,9 @@
   padding: 0 0 0.3em; 
   float: none;
 }
+.description .edit {
+  float: right;
+}
 img {
   vertical-align: middle;
   padding: 0 5px 10px 0;
@@ -28,17 +31,17 @@ img {
   font-size: inherit;
 }
 /*div.title > h2 > span:first-of-type, div.description > h2 > span:first-of-type, div.tags > h2 > span:first-of-type {*/
-.title > h2 > span:first-of-type, .description > h2 > span:first-of-type, .tags > h2 > span:first-of-type {  
+/*.title > h2 > span:first-of-type, .description > h2 > span:first-of-type, .tags > h2 > span:first-of-type {  
   font-weight: bold;
   font-style: italic;
   color: #D0CE6A;  
-}
+}*/
 /*div.title > span:first-of-type, div.description > span:first-of-type, div.tags > span:first-of-type {*/
-.title > span:first-of-type, .description > span:first-of-type, .tags > span:first-of-type {  
+/*.title > span:first-of-type, .description > span:first-of-type, .tags > span:first-of-type {  
   font-weight: bold;
   font-style: italic;
   color: #D0CE6A;
-}
+}*/
 /*#documentsListing > div {*/
 .entry {
   padding: 10px 10px 5px 10px;
@@ -48,14 +51,11 @@ img {
   border-radius: 15px;
   border: #04452F solid 2px;
 }
+/* .entry.visited will be set by JS */
 #documentsListing .entry:hover {
   border: #e6918c solid 2px;
-  /* OPACITY OF ENTIRE DOCUMENT BOX ON HOVER
-  -webkit-opacity: 0.6;
-  -moz-opacity: 0.6;
-  filter:alpha(opacity=60);
-  */
 }
+
 /*#documentsListing .title, #documentsListing .description {*/
 .entry .title, .entry .description {
   line-height: 1.2em;
@@ -63,7 +63,9 @@ img {
 }
 /*#documentsListing .title {*/
 .entry .title {
-  border-bottom: #ffffff dotted 1px;
+/*  underlining document titles instead
+border-bottom: #ffffff dotted 1px;
+*/
   margin-bottom: 3px;
   padding-bottom: 3px;
 }
@@ -72,7 +74,7 @@ img {
   line-height: 1.3em;
   font-size: 0.9em;
 }
-.tagsList input[type=submit] {
+.tagsList input[type=submit], .pill {
   background-color: #7D9C59;
   -moz-border-radius: 10px;
   -webkit-border-radius:10px;
@@ -87,7 +89,7 @@ img {
   margin-bottom: 5px;
   cursor: default;
 }
-.tagsList input[type=submit]:hover {
+.tagsList input[type=submit]:hover, .pill.active {
   background-color: #e6918c;
   color: #FFFFFF;
   border: #e6918c solid 1px;
@@ -95,6 +97,10 @@ img {
 }
 .tagsList {
   display: inline;
+}
+
+.entry .description em {
+  font-style: normal;
 }
 
 
@@ -107,7 +113,7 @@ img {
   -moz-border-radius: 15px;
   border-radius: 15px;
   font-size: inherit;
-  
+ 
 }
 #sidebar ul {
   margin: 0;
@@ -179,6 +185,9 @@ img {
 #sidebar .tags label {
   clear: both;
 }
+#sidebar #filterBox .close.button {
+  display: none;
+}
 
 .nextToSidebar {
   margin: 0 0 0 16em;
@@ -212,6 +221,15 @@ img {
   color: #04452F;
   width: 100%;
 }
+
+#appliedTags .reset.filter {
+  float: right;
+}
+
+#appliedTags .filter {
+  margin: 10px 2px;
+}
+
 .tagFilter {
   display: block;
 }
@@ -232,7 +250,9 @@ a {
 }
 .button.close {
   float: right;
-  margin-left: 18px
+  margin-left: 18px;
+  cursor: pointer;
+  font-weight: bold;
 }
 .entry {
     margin: 0 0.5em 0.85em 0.25em;
@@ -249,12 +269,14 @@ span.category {
     font-weight: bold;
 }
 #main {
-    overflow-y: inherit;
+    overflow-y: hidden !important;
 }
 #documentsListing {
+    position: relative;
     height: 95%;
     overflow-y: auto;
 }
+#message { display: none;}
 .cta {
   margin-left: 10px;
   /* merge these with other rules */
@@ -267,6 +289,7 @@ span.category {
   color: #E6918C;
 }
 .title > h2 > a {
+  text-decoration: underline;
   margin-left: 6px;
 }
 .ctaHighlighted {

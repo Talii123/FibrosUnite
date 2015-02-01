@@ -1,0 +1,10 @@
+.simpleMenu {
+	text-align: center;
+}
+.simpleMenu li {
+	display: inline-block;
+	list-style-image: none;
+	padding: 0 13px;
+	margin: 0 10px 5px;
+	font-weight: bold;
+}

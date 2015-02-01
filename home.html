@@ -58,16 +58,11 @@
 			  			</div>
 			      		<span>Find people affected by Fibrolamellar</span>
 			      	</a>
-		        </div>        
-		
-		
-
+		        </div>
 		 		<div id="option-block-footer"> 
 		 			<img src="img/facebook.png" width="60px">
 		 			<span>Become a member of the Fibrolamellar community at <a href="https://www.facebook.com/groups/fibrolamellar/">Fibrolamellars of the World Unite!</a></span>
-
 		 		</div>
-
 		    </div>
 		</div>
 		<div id="footer" class="absolute">
@@ -90,5 +85,8 @@
 		<script src="js/loadUserVoice.js"></script>
 		<!-- //-beg- concat_js -->
 		
+		<script>
+		$("body").on("click", ".button.close", makeCloseAndFillFunc($(".loginHelper"), $(".option-block"), $("#main")));
+		</script>
     </body>
 </html>

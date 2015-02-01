@@ -1,0 +1,21 @@
+
+.chosen-container .chosen-results li.highlighted { background: #e6918c; }
+
+.chosen-container .chosen-results,
+.chosen-container .chosen-results li.no-results, 
+.chosen-container .chosen-drop,
+.chosen-search > input,
+.chosen-container-active .chosen-choices li.search-field input[type="text"]
+ {
+ 	background-color: #2E763E;
+	color: white;
+}
+
+
+/* <- Not working in Chrome; shows red. */
+.chosen-search::selection {
+	background-color: #e6918c;
+	color: white;	
+	opacity: 1;
+}
+

@@ -1,0 +1,25 @@
+#tourController {
+	display: none;
+	width: 180px;
+	height: 30px;
+}
+#tourController .next, .control.next {
+	float: right;
+}
+#tourController .prev, .control.prev {
+	float: left;
+}
+#tourController .next, #tourController .prev, #tourController .close {
+	display: none;
+}
+#tourController.hasNext .next, #tourController.hasPrev .prev, #tourController.hasFinish .close {
+	display: inline;
+}
+
+.jBox-title .steps {
+	float: right;
+}
+
+.modal-footer {
+	text-align: center;
+}

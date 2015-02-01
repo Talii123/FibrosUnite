@@ -1,0 +1,70 @@
+
+
+.edit.control {
+	position: relative;
+	bottom: 15px;
+}
+
+#suggestAnEdit {
+	margin: 1em auto;
+	width: 80%;	
+}
+
+#suggestAnEdit input[type='submit'] {
+	float: right;
+}
+
+#suggestAnEdit input[type='submit']#submitSuggestion {
+	margin: 1em 1em 0 0;
+}
+
+#suggestAnEdit .suggestedDescription {
+	background-color: white;
+	margin: 0 auto;
+}
+
+#main.edit {
+	overflow-y: auto !important;
+}
+
+#main form > h2 {
+	margin: 0.5em 0;
+}
+
+
+#suggestionLabel {
+	display: inline-block;
+	margin-right: 1em !important;
+}
+
+.tagSelector {
+	width: 25em;
+	height: 10em;
+}
+
+.tagButtonsWrapper {
+	display: inline-block;
+	height: 10em;
+	vertical-align: top;
+	position: relative;
+}
+
+#selectTag, #unselectTag {
+	display: block;
+	width: 7.5em;
+	margin: 0 1.5em;
+}
+
+#selectTag {
+	position: absolute;
+	top: 2em;
+}
+
+#unselectTag {
+	position: absolute;
+	bottom: 2em;
+}
+
+#selectedTags {
+	float: right;
+}

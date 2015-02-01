@@ -7,9 +7,28 @@
   }
 }*/
 
+@media only screen and (max-width: 400px) {
+	#domain { display: none; }
+
+	nav#global ul {
+		position: fixed;
+		width: 100%;
+		left: 0;
+		margin: 0;
+		text-align: center;
+	}
+
+	nav#global ul li > * {
+		display: none;
+	}
+
+	nav#global ul li .selected {
+		display: block;
+		color: #fff;
+	}
+}
 
 @media only screen and (max-width: 320px) {
-	#domain { display: none; }
 	#header {
 		font-size: 1.95em !important;
 		padding-bottom: 15px !important;
@@ -30,9 +49,10 @@
 	  height: 25px !important;
 	  width: 25px !important;
 	}
+
 	.uv-icon {
 	  height: 25px !important;
-	  width: 25px !important;		
+	  width: 25px !important;
 	}
 	.uv-icon.uv-top-right {
 	  /* disable the 'top' coming from UV's styles */
@@ -127,7 +147,6 @@
 		position: absolute;
 		width: 97%;
 
-		top: 1em;
 		overflow-y: visible;
 		/*overflow-y: scroll;
 		height: 82%;
