@@ -1,26 +1,28 @@
-@media only screen and (max-width: 700px) {
-	#sidebar {
-		/*display: none;  	*/
-		margin-bottom: 0;
-		margin-top: 4em;
-		position: fixed;
-		width: 90%;
-		z-index: 1000;
-	}
+#mobileMenu, #about {
+	display: none;
+}
 
-	#help {
-		display: none
-	}
-
-	#main {
-		margin-left: 0;
-		margin-top: 17em;
-	}
-	body {
-		padding: 10px;
-		width: 95%;
-	}
-	iframe {
-		width: 91%;
-	}
+#mobileMenu .button.close {
+	margin-right: 0;
+	padding: 0;
+}
+#about {
+	overflow-y: auto;
+	height: 10em;
+	padding-right: 30px;
+}
+#about p:nth-of-type(1) {
+	display: inline;
+}
+/* should probably do this with all close buttons */
+#about .close.button {
+	position: absolute;
+	right: 20px;
+}
+#main #filterBox {
+	display: none;
+	padding: inherit;			
+}
+#main #appliedTags > select, #main #appliedTags > button, #main #appliedTags > div {
+	margin-bottom: 1em;
 }

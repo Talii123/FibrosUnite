@@ -1,0 +1,55 @@
+#global {
+  height: 50px;
+  font-size: 40px;
+  line-height: 45px;
+  font-family: papyrus;
+  border-bottom: #ffffff 2px solid;
+  overflow: hidden;
+}
+#global > * {
+  font-size: 0.6em;
+}
+#global ul {
+  float: right;
+  display: inline-block;
+  margin: 0 0.75em;
+  padding-top: 7px;
+  width: 69%;
+}
+
+#domain {
+  display: inline-block;
+  padding-top: 8px;
+}
+
+#global img {
+  padding: 0;
+}
+
+#global > a {
+  margin-left: 0;
+  margin-right: 5px;
+}
+
+#global ul a {
+  color: #FFFFFF;
+  text-decoration: none;
+  margin-right: 2%;
+  margin-left: 2%;
+}
+
+/*#global .home {
+  display: inline;
+  float: left;
+  width: 25%;
+}*/
+
+#global a:hover, #global a:active { 
+  text-decoration: underline;
+  cursor: pointer;
+}
+#global a.selected {
+  color: #E89A96;
+  text-decoration: none;
+  cursor: default;
+}

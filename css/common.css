@@ -38,35 +38,24 @@ iframe.map {
   max-width: 10000px;
 }
 
+.left {
+  float: left;
+}
+
 .fb-login-button iframe {
   margin: 0;
 }
 
-#header {
-  height: 65px;
-  font-size: 40px;
-  line-height: 65px;
-  font-family: papyrus;
-  margin-bottom: 40px;
-  border-bottom: #ffffff 2px solid;
-  overflow: hidden;
-}
-#header ul, #header li {
+.control {
   float: right;
-  display: inline-block;
-  margin: 0 0.75em;
+  cursor: pointer;
+  font-weight: bold;
 }
-#header ul {
-  font-size: 0.6em;
-  /*
-    for now, there is now header elements so hide the list
-  */
-  display: none;
+
+.uv-icon {
+    z-index: 9999 !important;
 }
-#header a { text-decoration: none; color: #FFFFFF; }
-#header a:visited { color: #FFFFFF; }
-#header a:hover { color: #FFFFFF; }
-#header a:active { color: #FFFFFF; }
+
 #option-block{
   margin: 0 auto 0;
   text-align: center;
@@ -130,7 +119,7 @@ iframe.map {
 
 a { text-decoration: underline; color: #FFFFFF ; }
 a:visited { color: #FFFFFF ; }
-a:hover, a:active, .highlight, .button:hover { color: #E89A96 ; }
+a:hover, a:active, .highlight, .button:hover, .control:hover { color: #E89A96 ; }
 .highlight {font-weight: bold;}
 
 #footer .smallContact { display: none;}

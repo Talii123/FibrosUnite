@@ -1,26 +1,67 @@
 
-function makeCloseAndFillFunc($toClose, $toFill, $container) { 
-  var containerHeight = $container.height();
+function emitClosingEvent($closingDiv) {
+	var eventType = "close:" + $closingDiv.attr("id");
+	console.log("\n\n going to trigger eventType: ", eventType);
+	$closingDiv.trigger(eventType);
+}
 
-  console.log("$container height: ", containerHeight);
-        console.log("$toFill: ", $toFill);
+function closeHandler($event) {
+	var $target = $($event.target)
+  		, dataToClose = $target.data("to-close");
 
-  function heightUpdater() {
-    console.log("heightUpdater called!");
-    var toCloseHeight = $toClose.height(),
-        newHeight = containerHeight - toCloseHeight;
-    console.log("setting height to: ", newHeight);
-    return newHeight;
-  };
+  	console.log("closeHandler called..");
 
-  return function() {
-    $toClose.slideUp({
-      progress: function() {
-      	console.log("progress!!");
-        $toFill.height(heightUpdater);
-      }
-    });
-  };
+  	$toClose = dataToClose ? $(dataToClose) : $target.parent();
+  	$toClose.slideUp();
+  	emitClosingEvent($toClose);
+}
+
+function closeAndPullUpHandler($event) { 
+	var containerHeight
+  		, $toClose
+  		, $toFill
+  		, $container;
+
+  	console.log("closeAndPullUpHandler called..");
+
+  	function init($event) {
+  		var $target = $($event.target)
+  			, dataToClose = $target.data("to-close")
+  			, dataToFill = $target.data("to-fill")
+  			, dataContainer = $target.data("container");
+		
+		$toClose = dataToClose ? $(dataToClose) : $target.parent();
+		$toFill = dataToFill ? $(dataToFill) : $toClose.next();
+		$container = dataContainer ? $(dataContainer) : $toClose.parent();
+		containerHeight = $container.height();
+
+		console.log("$event: ", $event);
+		console.log("$target: ", $target);
+		console.log("$toClose: ", $toClose);
+		console.log("$toFill: ", $toFill);
+		console.log("$container: ", $container);
+		console.log("$container height: ", containerHeight);
+	    console.log("$toFill: ", $toFill);
+  	}
+
+	function heightUpdater() {
+		return containerHeight - $toClose.height();
+	}
+
+
+
+	function doClose() {
+		$toClose.slideUp({
+		  progress: function() {
+		  	// console.log("progress!!");
+		    $toFill.height(heightUpdater);
+		  }
+		});		
+	}
+
+	init($event);
+	doClose();
+	emitClosingEvent($toClose);
 }
 
 

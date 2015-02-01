@@ -1,7 +1,7 @@
 
 function checkIfLoggedIn() {
 	var J_SESSION_ID_PARAM_NAME = "JSESSIONID",
-		DELAY_BEFORE_SHOWING_LOGIN_HELPER = 3000,
+		CHECK_IF_LOGIN_BUTTON_RENDERED_INTERVAL = 1000,
 		SELECTORS = {
 			LOGIN_HELPER : ".loginHelper"
 		};
@@ -42,7 +42,15 @@ function checkIfLoggedIn() {
 
 	function doIfNotLoggedIn() {
 		console.log("doIfNotLoggedIn");
-		$(SELECTORS.LOGIN_HELPER).delay(DELAY_BEFORE_SHOWING_LOGIN_HELPER).slideDown();
+		var interval;
+		interval = setInterval(function() {
+			var isButtonRendered = 
+				$(".fb-login-button[fb-xfbml-state='rendered']").length > 0;
+			if (isButtonRendered) {
+				$(SELECTORS.LOGIN_HELPER).slideDown();
+				clearInterval(interval);
+			}
+		}, CHECK_IF_LOGIN_BUTTON_RENDERED_INTERVAL);
 	}
 
 	if (isCookieSession() || isURLSession()) {

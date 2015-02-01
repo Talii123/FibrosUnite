@@ -1,0 +1,12 @@
+
+.entry .description em {
+	border-bottom: 2px dotted #fff;
+}
+
+.jBox-wrapper.jBox-Tooltip {
+	width: 33%;
+}
+
+.jBox-content, .jBox-title {
+	color: green;
+}
