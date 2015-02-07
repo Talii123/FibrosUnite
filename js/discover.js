@@ -694,7 +694,6 @@
 				, appliedTags = []
 				, lastAppliedTag
 				, oldState
-				, views = []
 				;
 
 			newShowingMessage = "Now showing documents tagged with ";
