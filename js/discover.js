@@ -25,35 +25,14 @@
 			}
 			, "stateDescriptor" : {
 				name: "state descriptor"
-				, builder: makeStateDescriptor
-			}
-			, "callToAction" : {
-				name: "call to action helper"
-				, builder: makeCallToActionHelper
+				, builder: function() {
+					return makeStateDescriptor($("#message .showing"));
+				}
 			}
 			, "search" : {
 				name: "search helper"
-				/* this should be simplified/generalized */
 				, builder: function() {
-					var callToActionHelper = FEATURES["callToAction"],
-						instance;
-
-					// add in this extra CTAHelper while testing the two versions
-					var lhnCTAHelper = makeCallToActionHelper('#searchFB', true);
-					lhnCTAHelper.init();
-					makeSearchHelper(lhnCTAHelper).init();
-
-					// WHY ARE WE REQUIRING AN EXISTING CTA HELPER?					
-					if (callToActionHelper && callToActionHelper.instance) {
-						return makeSearchHelper(callToActionHelper.instance);
-					} else if (callToActionHelper) {
-						callToActionInstance = callToActionHelper.builder();
-						callToActionInstance.init();
-						return makeSearchHelper(callToActionInstance);
-					} else {
-						console.error("Cannot create a search helper without a call to action helper!");
-					}
-
+					return makeSearchHelper(makeCallToActionHelper('#searchFB', true));
 				}
 			}
 			, "shareableURLs" : {
@@ -541,6 +520,7 @@
 
 		$parentEL = parentSelector ? $(parentSelector) : $("#message");
 		$ctaEL = $parentEL.find('.cta');
+		bindHandlers();
 
 		function highlightTitles() {
 			$(TITLES_SELECTOR).addClass(CTA_CLASS)
@@ -574,10 +554,7 @@
 		}
 
 		return {
-			init: function() {
-				bindHandlers();
-			}
-			, setCTA: function(ctaHTML) {
+			setCTA: function(ctaHTML) {
 				updateCallToAction(ctaHTML);
 				if (hideWhenEmpty) {
 					if (ctaHTML && ctaHTML.length) {
@@ -702,11 +679,9 @@
 		};
 	}
 
-	function makeStateDescriptor() {
+	function makeStateDescriptor($stateEL) {
 		var DEFAULT_STATE_DESCRIPTOR = "Showing all documents in our Facebook Group."
 			, STATE_TAG_CLASS = "describedTag"
-			, $stateEL = ensureInPage("#message .showing", "stateDescriptor")
-			, $MSG_BOX = $("#message")
 			;
 
 		function bindHandlers() {
@@ -715,10 +690,12 @@
 		}
 
 		function updateStateDescriptor() {
-			var newShowingMessage,
-				appliedTags = [],
-				lastAppliedTag,
-				oldState;
+			var newShowingMessage
+				, appliedTags = []
+				, lastAppliedTag
+				, oldState
+				, views = []
+				;
 
 			newShowingMessage = "Now showing documents tagged with ";
 			appliedTags = getAppliedTags() || [];
@@ -742,24 +719,39 @@
 					break;
 			}
 
+			// this is not just for our internal views; there was code
+			// elsewhere interested in this event (may no longer be true though)
 			oldState = $stateEL.html();
-			$stateEL.html(newShowingMessage);
 			$stateEL.trigger('change:state', {
 				oldValue: oldState
 				, newValue: newShowingMessage
 			});
+		}
 
-			new jBox('Notice', {
-				content: newShowingMessage + " <a href='#'>Click here</a> to search our groups for posts matching those tags."
-				, position: { x: 'left', y: 'bottom'}
+		function makeNotificationView($el) {
+			var NOTIFICATION_CTA_HTML = " <a href='#'>Click here</a> " +
+				"to search our groups for posts matching those tags.";
+			$el.on('change:state', function($event, eventData) {
+				new jBox('Notice', {
+					content: eventData.newValue + NOTIFICATION_CTA_HTML
+					, position: { x: 'left', y: 'bottom'}
+				});
 			});
+		}
+
+		function makeMsgBoxView($el) {
+			$el.on('change:state', function($event, eventData) {
+				$el.html(eventData.newValue);
+			});
+			$stateEL.parents().show();			
 		}
 
 		return {
 			init: function() {
 				console.log("state descriptor is initializing..");
 				bindHandlers();
-				$MSG_BOX.show();
+				makeNotificationView($stateEL);
+				//makeMsgBoxView($stateEL);
 				console.log("state descriptor is DONE initializing!");				
 			}
 		};
@@ -1206,21 +1198,13 @@
 			, isSelected
 			, initialTop
 			, changeInTop
-			, initialHeight
-			, newHeight
-			, changeInHeight
 			;
 
-
 		$matchedTags = getMatchingTags(aTagName);
-
 		$clickedEntry = $($triggeringEvent.target).closest('.entry');
 		$offsetParent = $clickedEntry.offsetParent();
+		initialTop = $clickedEntry.position().top;
 
-		initialTop = $clickedEntry.position().top;		
-		initialHeight = $offsetParent.height();
-
-		//isSelected = $matchedTags.first().hasClass("selected");
 		isSelected = filteredTagsMap[aTagName]
 		if (!isSelected) {
 			selectTag(aTagName);			
@@ -1230,11 +1214,7 @@
 		}
 
 		changeInTop = $clickedEntry.position().top - initialTop;
-		newHeight = MAIN_HEIGHT - $msgBox.outerHeight(true);
-		//changeInHeight = $offsetParent.height() - initialHeight;
-		changeInHeight = newHeight - initialHeight;
-		$offsetParent.height(newHeight);
-		$offsetParent.scrollTop($offsetParent.scrollTop() + changeInTop - changeInHeight);
+		$offsetParent.scrollTop($offsetParent.scrollTop() + changeInTop);
 	}
 
 
