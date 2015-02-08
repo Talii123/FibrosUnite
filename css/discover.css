@@ -205,13 +205,18 @@ border-bottom: #ffffff dotted 1px;
 #sidebar {
   padding-bottom: 20px;
 }
-#appliedTags > button ~ br {
-  margin: 0.25em 0 0.5em;
-}
-#appliedTags .h {
+#sidebar .h {
   font-weight: bold;
   font-style: italic;
   color: #D0CE6A;
+}
+
+#sidebar .help {
+  margin-left: 5px;
+}
+
+#appliedTags > button ~ br {
+  margin: 0.25em 0 0.5em;
 }
 #appliedTags select {
   /* White on Dark Green

@@ -575,10 +575,9 @@
 
 	function makeSearchHelper(callToActionHelper, openSearchInSamePage) {
 		var FB_SEARCH_BASE_URL =
-				"https://www.facebook.com/groups/fibrolamellar/search/?query=",
-			DEFAULT_CTA_MSG = "Click here to search our groups for posts matching those tags.",
-			LINK_TEXT = "Click here",
-			TARGET_ATTR = !openSearchInSamePage ? "target='_blank'" : "";
+				"https://www.facebook.com/groups/fibrolamellar/search/?query="
+			, views = []
+			;
 
 
 		function normalizeTag(tag) {
@@ -586,7 +585,6 @@
 					.replace(/\//g, ' ')
 					.replace(/\"/g, '')
 					.replace(/\'/g, '');
-
 		}
 
 		// not currently using because Facebook will 'AND' all terms together
@@ -641,40 +639,113 @@
 			return FB_SEARCH_BASE_URL + encodeURIComponent(appliedTags);
 		}
 
-		function makeSearchCTA(href) {
-			var closeTagIndex =
-					DEFAULT_CTA_MSG.indexOf(LINK_TEXT) + LINK_TEXT.length;
+		function updateQuery() {
+			var i, query;
 
-			return "<a href='" + href + "' " + TARGET_ATTR + " >" +
-				DEFAULT_CTA_MSG.substring(0, closeTagIndex) +
-				"</a>" +
-				DEFAULT_CTA_MSG.substring(closeTagIndex);
-		}
+			query = makeQuery();
+			if (query == FB_SEARCH_BASE_URL) query = "";
 
-		function onTagSelected() {
-			callToActionHelper.setCTA(makeSearchCTA(makeQuery()));
-		}
-
-		function onTagUnselected() {
-			var query = makeQuery();
-			if (query.length != FB_SEARCH_BASE_URL.length) {
-				callToActionHelper.setCTA(makeSearchCTA(query));
-			}
-			else {
-				callToActionHelper.reset();
+			for (i = 0; i < views.length; ++i) {
+				views[i].updateQuery(query);
 			}
 		}
 
 		function bindHandlers() {
-			$docsList.on("selectTag", onTagSelected);
-			$docsList.on("unselectTag", onTagUnselected);
+			$docsList.on("selectTag", updateQuery);
+			$docsList.on("unselectTag", updateQuery);
+		}
+
+		function makeCTAHelperView(callToActionHelper) {
+			var DEFAULT_CTA_MSG = "Click here to search our groups for posts matching those tags."
+				, LINK_TEXT = "Click here"
+				, TARGET_ATTR = !openSearchInSamePage ? "target='_blank'" : ""
+
+			function makeSearchCTA(href) {
+				var closeTagIndex =
+						DEFAULT_CTA_MSG.indexOf(LINK_TEXT) + LINK_TEXT.length;
+
+				return "<a href='" + href + "' " + TARGET_ATTR + " >" +
+					DEFAULT_CTA_MSG.substring(0, closeTagIndex) +
+					"</a>" +
+					DEFAULT_CTA_MSG.substring(closeTagIndex);
+			}
+
+
+			function updateQuery(query) {
+				if (query && query.length > 0) {
+					callToActionHelper.setCTA(makeSearchCTA(query));
+				}
+				else {
+					callToActionHelper.reset();
+				}
+			}
+
+			return {
+				updateQuery: updateQuery
+			};
+		}
+
+
+
+		function makeSideBarView($el) {
+			var SEARCH_BUTTON_ID = 'searchFBPostsButton'
+				, SEARCH_BUTTON_TEXT = 'Search'
+				, DISABLED_HELP_TEXT = 'Add a tag filter to enable this button. When enabled, you can click this button to search the Fibrolamellars of the World Unite! Facebook group for posts matching the tags you have selected.'
+				, ENABLED_HELP_TEXT = 'Click to search the Fibrolamellars of the World Unite! Facebook group for posts matching the tags you have selected.'
+				, $searchButton
+				, $searchHelp;
+
+			render($el);
+			$searchButton = $el.find('#' + SEARCH_BUTTON_ID);
+			$searchHelp = $el.find('.help');
+			updateEnabled();			
+
+			function updateQuery(query) {
+				$el.data('query', query);
+				updateEnabled();
+			}
+
+			function updateEnabled() {
+				var query = $el.data('query') || "";
+				if (query.length > 0) {
+					$searchButton.attr({
+						'disabled': false
+						, 'title': ENABLED_HELP_TEXT
+					});
+					$searchHelp.attr('title', ENABLED_HELP_TEXT);
+				}
+				else {
+					$searchButton.attr({
+						'disabled': true
+						, 'title': DISABLED_HELP_TEXT
+					});
+					$searchHelp.attr('title', DISABLED_HELP_TEXT);
+				}
+			}
+
+			function render($el) {
+				$('<button/>').attr({
+					id: SEARCH_BUTTON_ID
+				}).text(SEARCH_BUTTON_TEXT)
+				.appendTo($el)
+				.on('click', function() {
+					window.open($el.data('query'), '_blank')
+				});
+				$('<span/>').attr('class', 'help pill').text('i').appendTo($el);
+			}
+
+			return {
+				updateQuery: updateQuery
+			};
 		}
 
 		return {
 			init: function() {
-				console.log("search cta is initializing..");
+				console.log("search helper is initializing..");
+//				views.push(makeCTAHelperView(callToActionHelper));
+				views.push(makeSideBarView($('#searchFB')));
 				bindHandlers();
-				console.log("search cta is DONE initializing!");				
+				console.log("search helper is DONE initializing!");				
 			}
 		};
 	}
