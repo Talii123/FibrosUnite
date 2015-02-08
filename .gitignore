@@ -1,6 +1,7 @@
 backup/**
 intermediate/**
 noUpload/**
+!noUpload/w-results-msg-mockup.html
 war/**
 src/**
 *.zip
