@@ -690,12 +690,14 @@
 		function makeSideBarView($el) {
 			var SEARCH_BUTTON_ID = 'searchFBPostsButton'
 				, SEARCH_BUTTON_TEXT = 'Search'
-				, DISABLED_HELP_TEXT = 'Add a tag filter to enable searching the Facebook group&apos;s posts.'
-				, ENABLED_HELP_TEXT = 'Click to search the Facebook Group for posts matching the tags you have selected.'
-				, $searchButton;
+				, DISABLED_HELP_TEXT = 'Add a tag filter to enable this button. When enabled, you can click this button to search the Fibrolamellars of the World Unite! Facebook group for posts matching the tags you have selected.'
+				, ENABLED_HELP_TEXT = 'Click to search the Fibrolamellars of the World Unite! Facebook group for posts matching the tags you have selected.'
+				, $searchButton
+				, $searchHelp;
 
 			render($el);
 			$searchButton = $el.find('#' + SEARCH_BUTTON_ID);
+			$searchHelp = $el.find('.help');
 			updateEnabled();			
 
 			function updateQuery(query) {
@@ -710,12 +712,14 @@
 						'disabled': false
 						, 'title': ENABLED_HELP_TEXT
 					});
+					$searchHelp.attr('title', ENABLED_HELP_TEXT);
 				}
 				else {
 					$searchButton.attr({
 						'disabled': true
 						, 'title': DISABLED_HELP_TEXT
 					});
+					$searchHelp.attr('title', DISABLED_HELP_TEXT);
 				}
 			}
 
@@ -727,6 +731,7 @@
 				.on('click', function() {
 					window.open($el.data('query'), '_blank')
 				});
+				$('<span/>').attr('class', 'help pill').text('i').appendTo($el);
 			}
 
 			return {
@@ -737,8 +742,8 @@
 		return {
 			init: function() {
 				console.log("search helper is initializing..");
-				views.push(makeCTAHelperView(callToActionHelper));
-				views.push(makeSideBarView($('#searchFB2')));
+//				views.push(makeCTAHelperView(callToActionHelper));
+				views.push(makeSideBarView($('#searchFB')));
 				bindHandlers();
 				console.log("search helper is DONE initializing!");				
 			}
