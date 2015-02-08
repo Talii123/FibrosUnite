@@ -4,6 +4,7 @@
 	var MAIN_HEIGHT
 		, $docsList = $("#documentsListing")
 		, $ALL_ENTRIES = $(".entry", "#documentsListing")
+		, NULL_RESULTS_MSG_SEL = '#no-results-msg'
 		, ADD_TAG_FILTER_SELECTOR_ID = "AddTagFilterSelector"
 		, HAS_OWN = Object.prototype.hasOwnProperty
 		, BASE_DIR = location.protocol.charAt(0) === 'h' ? "" : ".."
@@ -1225,6 +1226,10 @@
 
 		rebuildTagSelector();
 
+		if (getVisibleDocuments().length > 0) {
+			$(NULL_RESULTS_MSG_SEL).addClass('hidden');
+		}		
+
 		$docsList.trigger("unselectTag", aTagName);
 	}
 
@@ -1255,7 +1260,16 @@
 		// NOT needed if the select options list is regenerated each time a filter is applied or removed
 		//removeTagFilterOptionInSelector(aTagName);
 
+		if (getVisibleDocuments().length <= 0) {
+			$(NULL_RESULTS_MSG_SEL).removeClass('hidden');
+		}
 		$docsList.trigger("selectTag", aTagName);
+	}
+
+	function getVisibleDocuments() {
+		return $(".entry", $docsList)
+				.not('.hidden')
+				.not(NULL_RESULTS_MSG_SEL);
 	}
 
 
