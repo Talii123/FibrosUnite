@@ -1372,7 +1372,7 @@
 	}
 
 	function f_isHidden() {
-		return this.style.display != "none"
+		return !$(this).hasClass('hidden');
 	}	
 
 	function f_getIdsAndTagsForEntry() {
