@@ -575,10 +575,9 @@
 
 	function makeSearchHelper(callToActionHelper, openSearchInSamePage) {
 		var FB_SEARCH_BASE_URL =
-				"https://www.facebook.com/groups/fibrolamellar/search/?query=",
-			DEFAULT_CTA_MSG = "Click here to search our groups for posts matching those tags.",
-			LINK_TEXT = "Click here",
-			TARGET_ATTR = !openSearchInSamePage ? "target='_blank'" : "";
+				"https://www.facebook.com/groups/fibrolamellar/search/?query="
+			, views = []
+			;
 
 
 		function normalizeTag(tag) {
@@ -586,7 +585,6 @@
 					.replace(/\//g, ' ')
 					.replace(/\"/g, '')
 					.replace(/\'/g, '');
-
 		}
 
 		// not currently using because Facebook will 'AND' all terms together
@@ -641,38 +639,62 @@
 			return FB_SEARCH_BASE_URL + encodeURIComponent(appliedTags);
 		}
 
-		function makeSearchCTA(href) {
-			var closeTagIndex =
-					DEFAULT_CTA_MSG.indexOf(LINK_TEXT) + LINK_TEXT.length;
+		function updateQuery() {
+			var i, query;
 
-			return "<a href='" + href + "' " + TARGET_ATTR + " >" +
-				DEFAULT_CTA_MSG.substring(0, closeTagIndex) +
-				"</a>" +
-				DEFAULT_CTA_MSG.substring(closeTagIndex);
-		}
+			query = makeQuery();
+			if (query == FB_SEARCH_BASE_URL) query = "";
 
-		function onTagSelected() {
-			callToActionHelper.setCTA(makeSearchCTA(makeQuery()));
-		}
-
-		function onTagUnselected() {
-			var query = makeQuery();
-			if (query.length != FB_SEARCH_BASE_URL.length) {
-				callToActionHelper.setCTA(makeSearchCTA(query));
-			}
-			else {
-				callToActionHelper.reset();
+			for (i = 0; i < views.length; ++i) {
+				views[i].updateQuery(query);
 			}
 		}
 
 		function bindHandlers() {
-			$docsList.on("selectTag", onTagSelected);
-			$docsList.on("unselectTag", onTagUnselected);
+			$docsList.on("selectTag", updateQuery);
+			$docsList.on("unselectTag", updateQuery);
+		}
+
+		function makeCTAHelperView(callToActionHelper) {
+			var DEFAULT_CTA_MSG = "Click here to search our groups for posts matching those tags."
+				, LINK_TEXT = "Click here"
+				, TARGET_ATTR = !openSearchInSamePage ? "target='_blank'" : ""
+
+			function makeSearchCTA(href) {
+				var closeTagIndex =
+						DEFAULT_CTA_MSG.indexOf(LINK_TEXT) + LINK_TEXT.length;
+
+				return "<a href='" + href + "' " + TARGET_ATTR + " >" +
+					DEFAULT_CTA_MSG.substring(0, closeTagIndex) +
+					"</a>" +
+					DEFAULT_CTA_MSG.substring(closeTagIndex);
+			}
+
+
+			function updateQuery(query) {
+				if (query && query.length > 0) {
+					callToActionHelper.setCTA(makeSearchCTA(query));
+				}
+				else {
+					callToActionHelper.reset();
+				}
+			}
+
+			return {
+				updateQuery: updateQuery
+			};
+		}
+
+
+
+		function makeSideBarView() {
+
 		}
 
 		return {
 			init: function() {
 				console.log("search cta is initializing..");
+				views.push(makeCTAHelperView(callToActionHelper));
 				bindHandlers();
 				console.log("search cta is DONE initializing!");				
 			}
