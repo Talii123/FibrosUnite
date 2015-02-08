@@ -687,16 +687,60 @@
 
 
 
-		function makeSideBarView() {
+		function makeSideBarView($el) {
+			var SEARCH_BUTTON_ID = 'searchFBPostsButton'
+				, SEARCH_BUTTON_TEXT = 'Search'
+				, DISABLED_HELP_TEXT = 'Add a tag filter to enable searching the Facebook group&apos;s posts.'
+				, ENABLED_HELP_TEXT = 'Click to search the Facebook Group for posts matching the tags you have selected.'
+				, $searchButton;
 
+			render($el);
+			$searchButton = $el.find('#' + SEARCH_BUTTON_ID);
+			updateEnabled();			
+
+			function updateQuery(query) {
+				$el.data('query', query);
+				updateEnabled();
+			}
+
+			function updateEnabled() {
+				var query = $el.data('query') || "";
+				if (query.length > 0) {
+					$searchButton.attr({
+						'disabled': false
+						, 'title': ENABLED_HELP_TEXT
+					});
+				}
+				else {
+					$searchButton.attr({
+						'disabled': true
+						, 'title': DISABLED_HELP_TEXT
+					});
+				}
+			}
+
+			function render($el) {
+				$('<button/>').attr({
+					id: SEARCH_BUTTON_ID
+				}).text(SEARCH_BUTTON_TEXT)
+				.appendTo($el)
+				.on('click', function() {
+					window.open($el.data('query'), '_blank')
+				});
+			}
+
+			return {
+				updateQuery: updateQuery
+			};
 		}
 
 		return {
 			init: function() {
-				console.log("search cta is initializing..");
+				console.log("search helper is initializing..");
 				views.push(makeCTAHelperView(callToActionHelper));
+				views.push(makeSideBarView($('#searchFB2')));
 				bindHandlers();
-				console.log("search cta is DONE initializing!");				
+				console.log("search helper is DONE initializing!");				
 			}
 		};
 	}
