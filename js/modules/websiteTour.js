@@ -325,7 +325,6 @@ function websiteTour(module_z_index) {
 			, isStarted: function() { return isTourStarted(tourID); }
 			, isCompleted: function() { return isTourCompleted(tourID); }
 			, isSkipped: function() { return isTourSkipped(tourID); }
-//			, isPaused: isPaused
 //			, complete: completeTour
 
 			// should probably be folded into start/resume as an option
@@ -337,7 +336,6 @@ function websiteTour(module_z_index) {
 			tourLinkHelper = makeTourLinkHelper(tour, $(options.tourActionLinkEl$));
 			tourLinkHelper.init(tour);			
 		}
-
 
 		return tour;
 
@@ -444,12 +442,8 @@ function websiteTour(module_z_index) {
 		function init(jBoxDefs, options) {
 			// NOTE: not local vars!
 			currentBox = -1;
-
 			initControlsBox(options);
-
 			jBoxes = $.map(jBoxDefs, makeJBox);
-
-			attachHandlers($el);
 		}
 
 		function show() {
@@ -483,10 +477,10 @@ function websiteTour(module_z_index) {
 				
 				jBoxes[currentBox].open();
 
-				if (hasPrev()) {
+				if ($el && hasPrev()) {
 					$el.addClass('hasPrev');	
 				}					
-				if (!hasNext()) {
+				if ($el && !hasNext()) {
 					$el.removeClass('hasNext');
 					$el.addClass('hasFinish');
 				}
@@ -505,9 +499,11 @@ function websiteTour(module_z_index) {
 				console.log("opening box #", currentBox);
 				jBoxes[currentBox].open();
 
-				$el.addClass('hasNext');
-				if (!hasPrev()) {
-					$el.removeClass('hasPrev');
+				if ($el) {
+					$el.addClass('hasNext');
+					if (!hasPrev()) {
+						$el.removeClass('hasPrev');
+					}
 				}
 			}				
 		}
@@ -517,8 +513,6 @@ function websiteTour(module_z_index) {
 			jBoxes[currentBox].close();
 		}
 
-
-		// TODO: TEST
 		function resume() {
 			var jBox
 				, stepNumber = _getLastSavedStep(tourID)
@@ -553,11 +547,9 @@ function websiteTour(module_z_index) {
 			if (tourLinkHelper) {
 				tourLinkHelper.setLinkAction('resume');
 			}
-			//jBoxes[currentBox].open();
 			currentBox -= 1;
 			next();
 		}
-
 
 		function skip(options) {
 			var key;
@@ -569,26 +561,6 @@ function websiteTour(module_z_index) {
 				tourLinkHelper.showLinkHelp();	
 			} 
 		}
-
-		
-
-		/*function isPaused() {
-			var isPausedNow,
-				isPausedBefore;
-			/*var key = _getTourStateKey(tourID, TOUR_STATES.PAUSED);
-			return getPersistedForSession(key) === 'true';//* /
-			
-			return !isCompleted() &&
-				isStarted() &&
-				!isSkipped() && 
-
-			isPausedNow = 
-				currentBox < jBoxes.length-1 &&  // if currentBox == jBoxes.length tour is finished
-				currentBox >= 0 && 				 // valid index
-				!jBoxes[currentBox].isOpen 		 // current jBox is closed
-
-		}*/
-
 
 		function completeTour() {
 			var key = _getTourStateKey(tourID, TOUR_STATES.COMPLETED);
