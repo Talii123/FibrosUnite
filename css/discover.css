@@ -95,6 +95,9 @@ border-bottom: #ffffff dotted 1px;
   border: #e6918c solid 1px;
   cursor: pointer;
 }
+.tagsList input[name="removeTagFilter"] {
+  vertical-align: middle;
+}
 .tagsList {
   display: inline;
 }

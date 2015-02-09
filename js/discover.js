@@ -1244,7 +1244,7 @@
 		$matchedTags.addClass("selected");
 
 		// update LHN
-		$("#appliedTags .tagsList").show().append($("<span class='tagFilter'></span>").html(aTagName+" | <input type='submit' name='removeTagFilter' value='x'/>").data("tagName", aTagName));
+		$("#appliedTags .tagsList").show().append($("<span class='tagFilter'></span>").html("<input type='submit' name='removeTagFilter' value='x'/>" + aTagName.replace(/(\S)\/(\S)/g, '$1 / $2')).data("tagName", aTagName));
 
 		
 //		console.log("$matchedTags: ", $matchedTags);
