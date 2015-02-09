@@ -102,28 +102,56 @@
 					}
 
 					function getDocumentsTour() {
-						var truncationToggler
-							, $firstEntry
+						var SELECTORS = {
+								DOC_LINK: '.title a'
+								, activeTag: function(tag) {
+									return 'input[value="' + tag + '"]';
+								}
+							}
+							, isDocAtTop
+							, ensureDocAtTop
+							, highlightNextXDocs
+							, $firstEntry = $docsList.find('.entry:nth-of-type(1)')
 							, options
 							, jBoxDefs
+							, $AmandaDoc = $docsList.find('#184016744985917')
 							;
 
-						$firstEntry = $('#documentsListing .entry:nth-of-type(1)');
+						isDocAtTop = function($doc, tolerance) {
+							var top = $doc ? $doc.position().top : 0;
 
-						truncationToggler = function() {
-							this.options.target.trigger('click');
-							this.options.target = this.options.target.hasClass('expander') ?
-								$('.truncation.control.collapser', $firstEntry) :
-								$('.truncation.control.expander', $firstEntry);
+							tolerance = tolerance || 100; // not an exact science, but if top is above this value, doc is not at the top
+							return top < tolerance && top > -tolerance;
 						};
+
+						ensureDocAtTop = function($doc) {
+							if (!isDocAtTop($doc)) {
+								$docsList.scrollTop($doc.position().top + $docsList.scrollTop());
+							}
+						};
+
+						highlightNextXDocs = function($target, numDocsToHighlight, elementToHighlight) {
+							var i;
+
+							for (i=0; i < numDocsToHighlight; ++i) {
+								$target = $target && $target.next('.entry');	
+								while ($target && $target.length && $target.hasClass('hidden')) {
+									$target = $target.next('.entry');	
+								}
+								console.log("\n\n $target: ", $target);
+								if ($target && $target.length) {
+									jBox.prototype.lightOnTarget($target.find(elementToHighlight));
+								}
+							}
+						}
 
 						options = {			
 							zIndex: TOURS_Z_INDEX
 							, embedControls: true
-							, showTourController: true
+							, showTourController: false
 							, stepCountLocation: 'footer'
 							, stepBox: {
-								width: $firstEntry.width()
+								width: $AmandaDoc.width() * 0.75
 							}
 							, tourActionLinkEl$: TOUR_ACTION_LINK_EL$
 						};
@@ -134,57 +162,47 @@
 								content: 'In the middle of the page is a collection of document summaries. Each summary corresponds to a document or file that a member of our Facebook group has shared.'
 								, title: 'Document Summaries'
 								, width: $('#sidebar').outerWidth()
-								//, attach: $('#sidebar')
 								, target: $docsList
 								, position: { x: 'left ', y: 'top'}
 								, offset: { y: 68 }
 								, outside: 'x'
 								, pointTo: 'right'
-								/*, onOpen: function() {
-									$(this).trigger('click');
+								, onNext: function() {
+									ensureDocAtTop($AmandaDoc);
 								}
-								/*, position: { y: 'top' }
-								, outside: 'y'*/
 							}
 							, {
-								content: "If you click the title of a summary, you will be taken directly to that document - but ONLY if you are a member of our group AND logged in to Facebook. <strong>Only group members can view the documents!</strong><br/><br/>If you are a member but not logged in, then all you have to do is follow Facebook's prompts to log in, and once done, you will be taken to the document you chose."
+								content: "If you click the title of a summary, you will be taken directly to that document - but ONLY if you are a member of our group AND logged in to Facebook. <br/><br/><strong>Only group members can view the documents!</strong><br/><br/>If you are a member but not logged in, then all you have to do is follow Facebook's prompts to log in, and once done, you will be taken to the document you chose.<br/><br/>"
 								, title: 'Viewing Documents'
-								, target: $('.title a', $firstEntry)
+								, target: $('.title a', $AmandaDoc)
 								, position: { y: 'bottom' }
 								, offset: { x: -85 }
 								, pointer: 'left:10'
 								, outside: 'y'
-								/*
-								, target: $('.title a', $firstEntry)
-								, width: $('.title a', $firstEntry).width()
-								, position: { x: 'right' }
-								, outside: 'x'
-								*/
 							}
 							, {
 								content: "Below the title of each document summary is a collection of tags. These tags help you see some of the key topics mentioned in that document. You can click on a tag to hide all documents that don't have that tag. If you click on the tag a second time, it undoes that selection, and adds all those hidden documents back to the list."
 								, title: 'Tags'
-								, target: $('.tags', $firstEntry)
+								, target: $('.tags', $AmandaDoc)
 								, position: { y: 'bottom' }
 								, offset: { y: -7 }
 								, outside: 'y'
 							}
 							, {
-								/*content: "See the tag for &quot;Nexavar&quot;/Sorafenib? See the document below called _____. Click on the tag now."
-								, title: 'Filtering by clicking tags'*/
-								//, target: $('input[value$="Sorafenib"]', $firstEntry)
-								content: "See the tag for &quot;Liver Surgery&quot;? See the document below called _____. Click on the tag now."
-								, target: $('input[value$="Liver Surgery"]', $firstEntry)
-								, position: { y: 'bottom' }
+								content: "You can filter the summaries by clicking on the tags. Let's try it out!<br/>First, make a note of the titles of the documents below. <br/>Now, see the tag for &quot;Surgery to Remove Tumors Outside of the Liver&quot;? <br/>Click on it."
+								, title: 'Filtering by clicking tags'
+								, target: $('input[value$="Surgery to Remove Tumors Outside of the Liver"]', $AmandaDoc)
+								//, position: { y: 'bottom' }
+								, position: { x: 'left' }
 								, repositionOnContent: true
-								, outside: 'y'
+								//, outside: 'y'
+								, outside: 'x'
 								//, offset: { x: -250 }
 								, task: {
 									onStart: function(task) {
 										var jBox = this;
 
 										function taskHandler() {
-											alert("I was clicked!!");
 											// need to do a close/open cycle to 
 											// trigger repositioning IF the modal 
 											// doesn't change size
@@ -199,10 +217,11 @@
 										}
 										jBox.taskHandler = taskHandler;
 										jBox.options.target.one('click', taskHandler);
+
+										highlightNextXDocs($AmandaDoc, 3, SELECTORS.DOC_LINK);
 									}
 									, onUnstart: function(task) {
 										var jBox = this;
-										alert("onUnstart!!!");
 										jBox.options.target.off(
 											'click', 
 											jBox.taskHandler
@@ -210,17 +229,22 @@
 									}
 									, onComplete: function(task) {
 										var $content
-											, jBox = this;
+											, jBox = this
+											, completionText = "Awesome! You did it!!<br/>Notice how there are now different documents below Amanda's story than there were before? That's because the documents that were there before don't have the tag you selected. Only documents with the tag you chose are showing, and they all have that tag highlighted.";
 
 										$content = $(jBox.content.prop("outerHTML"));
-										$content.html("You did it!!");
-											/*.prepend("You did it!! ")
-											.find(".modal-footer")
-											.remove();*/
-
+										$content.html(completionText);
 										jBox.updateContent($content);
+										setTimeout(function() {
+											var selector = SELECTORS.DOC_LINK + 
+												',' + 
+												SELECTORS.activeTag('Surgery to Remove Tumors Outside of the Liver');
+											highlightNextXDocs($AmandaDoc, 3, selector);	
+										}, 0);
+										
 									}
 								}
+								/*
 								, onOpen: function() {
 									var $derrickStory = $("#490803154307273");
 
@@ -238,39 +262,35 @@
 									this.options.defaultOnClose.call(this);
 									//this.lightOffTarget(this.options.target);
 
-								}
+								}*/
 							}
 							, {
 								content: "Below the tags is a short summary of what the document is about. Only one line is shown by default. If the description is longer than one line than whatever does not fit is hidden. You can click the 'read more' button to see the rest of the description."
 								, title: 'Description'
-								, target: $('.description', $firstEntry)
+								, target: $('.description', $AmandaDoc)
 								, position: { y: 'bottom' }
 								, outside: 'y'
 							}
 							, {
 								content: "If the description is long, you have to click on 'Read More' to find the link. If the document summary fits in one line, you will see the 'Suggest an Edit' link already there."
 								, title: 'Read More'
-								, width: $firstEntry.width()
-								, target: $('.truncation.control.expander', $firstEntry)
+								, target: $('.truncation.control.expander', $AmandaDoc)
 								, pointer: 'right'
 								, position: { y: 'bottom' }
 								, outside: 'y'
 								, onNext: function() {
-									console.log("onNext();")
-									$('.truncation.control.expander', $firstEntry).trigger("click");
+									$('.truncation.control.expander', $AmandaDoc).trigger("click");
 								}
 							}
 							, {
 								content: "This site is meant to be community driven - we want YOU to help make sure the content is accurate and high quality. For that reason there is a link called 'Suggest an Edit' on each document summary. If the description is long, you have to click on 'Read More' to find the link. If the document summary fits in one line, you will see the 'Suggest an Edit' link already there."
 								, title: 'Suggest An Edit'
-								, width: $firstEntry.width()
-								, target: $('.edit.control', $firstEntry)
+								, target: $('.edit.control', $AmandaDoc)
 								, pointer: 'right'
 								, position: { y: 'bottom' }
 								, outside: 'y'
 								, onPrev: function() {
-									console.log("onPrev();")
-									$('.truncation.control.collapser', $firstEntry).trigger("click");
+									$('.truncation.control.collapser', $AmandaDoc).trigger("click");
 								}
 							}
 							, {
@@ -799,7 +819,9 @@
 			$el.on('change:state', function($event, eventData) {
 				new jBox('Notice', {
 					content: eventData.newValue + NOTIFICATION_CTA_HTML
+					, stack: false
 					, position: { x: 'left', y: 'bottom'}
+					, width: $(window).width()
 				});
 			});
 		}

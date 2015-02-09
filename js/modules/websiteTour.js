@@ -282,7 +282,8 @@ function websiteTour(module_z_index) {
 							addControls(this, $footer);
 						}
 
-						$footer.appendTo(this.content);						
+						$footer.appendTo(this.content);
+						$footer.before('<br/><br/>');
 					}
 				}
 				, controlBox: {
