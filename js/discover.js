@@ -976,29 +976,32 @@
 	}
 
 	function makeAutocompleteHelper() {
-		var autocomplete,
-			$tagSelector,
-			defaultOptions = {
-				search_contains: true
-			};
-
 		return {
 			init: function(jqSelector) {
+				var autocomplete
+					, $tagSelector
+					, tagSelector
+					, defaultOptions = {
+						search_contains: true
+						, placeholder_text_single: 'Click Here To Choose Tags'
+						, allow_single_deselect: false
+					};
+
 				console.log("init autocomplete helper called with jqSelector: ", jqSelector);
 				$tagSelector = ensureInPage(jqSelector, "autocompleteHelper");
+				tagSelector = $tagSelector.get(0);
+				tagSelector.selectedIndex = -1;
 				autocomplete = $tagSelector.chosen(defaultOptions);
+				autocomplete.change(function(evt, params) {
+					console.log("evt: ", evt, "\n params: ", params);
+					selectTag(params.selected);
+					this.selectedIndex = -1;
+				});
 
 				this.updateOptions = function(newLookupOptions) {
-					/*var currentOptions = $.extend(
-						{lookup: newLookupOptions}, 
-						defaultOptions
-					);
-					autocomplete.options(currentOptions);*/
+					tagSelector.selectedIndex = -1;
 					$tagSelector.trigger("chosen:updated");
 				};
-
-				// is this needed? 
-				//this.updateOptions();
 			}
 		};
 	}
@@ -1297,22 +1300,22 @@
 
 
 	function f_makeOptionGroupsHTML(optionsArray) {
-		var i,
-			optGroupToOptionsMap = {},
-			optionGroupLabel,
-			optionGroupStr,
-			output = [],
-			groupOfOptions,
-			OPTION_GROUPS_TO_OUTPUT = [
-				"Treatments",
-				"Surgery", 
-				"Chemotherapy",
-				"Radiation", 
-				"Symptoms and Side Effects", 
-				"Disease Sites/Locations", 
-				"Disease Stage", 
-				"General Knowledge and Tips", 
-				"Other"
+		var i
+			, optGroupToOptionsMap = {}
+			, optionGroupLabel
+			, optionGroupStr
+			, output = []
+			, groupOfOptions
+			, OPTION_GROUPS_TO_OUTPUT = [
+				"Treatments"
+				, "Surgery"
+				, "Chemotherapy"
+				, "Radiation"
+				, "Symptoms and Side Effects"
+				, "Disease Sites/Locations"
+				, "Disease Stage"
+				, "General Knowledge and Tips"
+				, "Other"
 			];
 
 		if (!optionsArray || !optionsArray.length) return [];
@@ -1454,22 +1457,16 @@
 			unselectTag(tag);
 		});
 
-		$("<button class='add filter'>Add Filter</button>")
-			.on("click", function() {
-				var tagFilterSelector = $(this).closest("#filterBox").find("select#"+ADD_TAG_FILTER_SELECTOR_ID).get(0),
-					tagToSelect = tagFilterSelector.value;
-
-				console.log("tagToSelect: ", tagToSelect);
-				selectTag(tagToSelect);			
-			})
-			.insertBefore("#appliedTags .tagsList")
-			.before($(f_createTagSelectorHTML()).attr({"id" : ADD_TAG_FILTER_SELECTOR_ID}))
-			.after("<br/>");
+		$(f_createTagSelectorHTML())
+			.attr({"id" : ADD_TAG_FILTER_SELECTOR_ID})
+			.insertAfter('#appliedTags br')
+			.after('<br/>');
 		$("<button class='reset filter'>Reset Filters</button>")
 			.on('click', function() {
 				$("[name='removeTagFilter']").trigger("click");
 			})
-			.insertAfter("#appliedTags .add.filter");
+			.insertBefore("#appliedTags .tagsList")
+			.after('<br/>');
 		$(".helpLink").on("click", function($event) {
 			$event.preventDefault();
 			$("#helpText").slideToggle();
