@@ -3,10 +3,10 @@
 	width: 180px;
 	height: 30px;
 }
-#tourController .next, .control.next {
+#tourController .next {
 	float: right;
 }
-#tourController .prev, .control.prev {
+#tourController .prev {
 	float: left;
 }
 #tourController .next, #tourController .prev, #tourController .close {
@@ -16,10 +16,9 @@
 	display: inline;
 }
 
-.jBox-title .steps {
-	float: right;
+.jBox-title .steps { float: right; }
+.modal-footer .steps {
+	margin: auto 18px;
 }
-
-.modal-footer {
-	text-align: center;
-}
+.modal-footer { text-align: center; }
+.modal-footer .control { float: none; }

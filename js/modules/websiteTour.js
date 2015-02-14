@@ -351,7 +351,7 @@ function websiteTour(module_z_index) {
 		function addControls(jBox, $controlsContainer) {
 			if (jBox.index > 0) {
 				$controlsContainer
-					.append('<span class="control prev">Previous</span>');
+					.prepend('<span class="control prev">Previous</span>');
 			}		
 			if (jBox.index < jBoxes.length -1 ) {
 				$controlsContainer
