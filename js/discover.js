@@ -106,11 +106,9 @@
 							, $firstEntry
 							, options
 							, jBoxDefs
-							, $KayteDoc = $docsList.find('#182099078511017');
+							;
 
-						// not really; only temporary
 						$firstEntry = $('#documentsListing .entry:nth-of-type(1)');
-						//$firstEntry = $('#430857446968511');
 
 						truncationToggler = function() {
 							this.options.target.trigger('click');
@@ -125,7 +123,7 @@
 							, showTourController: true
 							, stepCountLocation: 'footer'
 							, stepBox: {
-								width: $KayteDoc.width()
+								width: $firstEntry.width()
 							}
 							, tourActionLinkEl$: TOUR_ACTION_LINK_EL$
 						};
@@ -147,14 +145,11 @@
 								}
 								/*, position: { y: 'top' }
 								, outside: 'y'*/
-								, onNext: function() {
-									$docsList.scrollTop($KayteDoc.position().top);
-								}
 							}
 							, {
 								content: "If you click the title of a summary, you will be taken directly to that document - but ONLY if you are a member of our group AND logged in to Facebook. <strong>Only group members can view the documents!</strong><br/><br/>If you are a member but not logged in, then all you have to do is follow Facebook's prompts to log in, and once done, you will be taken to the document you chose."
 								, title: 'Viewing Documents'
-								, target: $('.title a', $KayteDoc)
+								, target: $('.title a', $firstEntry)
 								, position: { y: 'bottom' }
 								, offset: { x: -85 }
 								, pointer: 'left:10'
@@ -169,8 +164,7 @@
 							, {
 								content: "Below the title of each document summary is a collection of tags. These tags help you see some of the key topics mentioned in that document. You can click on a tag to hide all documents that don't have that tag. If you click on the tag a second time, it undoes that selection, and adds all those hidden documents back to the list."
 								, title: 'Tags'
-								, width: $KayteDoc.outerWidth()
-								, target: $('.tags', $KayteDoc)
+								, target: $('.tags', $firstEntry)
 								, position: { y: 'bottom' }
 								, offset: { y: -7 }
 								, outside: 'y'
@@ -180,7 +174,7 @@
 								, title: 'Filtering by clicking tags'*/
 								//, target: $('input[value$="Sorafenib"]', $firstEntry)
 								content: "See the tag for &quot;Liver Surgery&quot;? See the document below called _____. Click on the tag now."
-								, target: $('input[value$="Liver Surgery"]', $KayteDoc)
+								, target: $('input[value$="Liver Surgery"]', $firstEntry)
 								, position: { y: 'bottom' }
 								, repositionOnContent: true
 								, outside: 'y'
