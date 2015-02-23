@@ -102,31 +102,137 @@
 					}
 
 					function getDocumentsTour() {
-						var truncationToggler
-							, $firstEntry
+						var SELECTORS = {
+								DOC_LINK: '.title a'
+								, activeTag: function(tag) {
+									return 'input[value="' + tag + '"]';
+								}
+							}
+							, isDocAtTop
+							, ensureDocAtTop
+							, ensureAmandaOnOpen
+							, highlightNextXDocs
+							, makeClickTask
+							, $firstEntry = $docsList.find('.entry:nth-of-type(1)')
 							, options
 							, jBoxDefs
+							, $AmandaDoc = $docsList.find('#184016744985917')
 							;
 
-						$firstEntry = $('#documentsListing .entry:nth-of-type(1)');
+						isDocAtTop = function($doc, tolerance) {
+							var top = $doc ? $doc.position().top : 0;
 
-						truncationToggler = function() {
-							this.options.target.trigger('click');
-							this.options.target = this.options.target.hasClass('expander') ?
-								$('.truncation.control.collapser', $firstEntry) :
-								$('.truncation.control.expander', $firstEntry);
+							tolerance = tolerance || 100; // not an exact science, but if top is above this value, doc is not at the top
+							return top < tolerance && top > -tolerance;
 						};
+
+						ensureDocAtTop = function($doc) {
+							if (!isDocAtTop($doc)) {
+								$docsList.scrollTop($doc.position().top + $docsList.scrollTop());
+							}
+						};
+
+						ensureAmandaOnOpen = function() {
+							$('.reset.filter').trigger('click');
+							ensureDocAtTop($AmandaDoc);
+						};
+
+						highlightNextXDocs = function($target, numDocsToHighlight, elementToHighlight) {
+							var i
+								, $highlighted = []
+								, $toHighlight;
+
+							for (i=0; i < numDocsToHighlight; ++i) {
+								$target = $target && $target.next('.entry');	
+								while ($target && $target.length && $target.hasClass('hidden')) {
+									$target = $target.next('.entry');	
+								}
+								console.log("\n\n $target: ", $target);
+								if ($target && $target.length) {
+									$toHighlight = $target.find(elementToHighlight);
+									jBox.prototype.lightOnTarget($toHighlight);
+									$highlighted.push($toHighlight);
+								}
+							}
+
+							return $highlighted;
+						}
 
 						options = {			
 							zIndex: TOURS_Z_INDEX
 							, embedControls: true
-							, showTourController: true
+							, showTourController: false
 							, stepCountLocation: 'footer'
 							, stepBox: {
-								width: $firstEntry.width()
+								width: 577 //$docsList.find('.entry:visible').width() * 0.75
 							}
 							, tourActionLinkEl$: TOUR_ACTION_LINK_EL$
 						};
+
+						makeClickTask = function(options) {
+							var completionText = options.completionText
+								, _target = options.target
+								, clickTaskDef = {
+									onStart: onStart
+									, onUnstart: onUnstart
+									, onComplete: onComplete
+								}
+								;
+
+							function clickHandler() {
+								var _jBox = this;
+
+								console.log('\n\nClickHandler called! _target=',_target, '\n\n');
+
+								// need to do a close/open cycle to
+								// trigger repositioning IF the modal
+								// doesn't change size
+								_jBox.close();
+								_jBox.task.complete();
+
+								// handy trick to ensure underlying DOM
+								// changes before Modal is recomputed
+								setTimeout(function() {
+									_jBox.open();
+								}, 0);
+							};
+
+							function onStart(task) {
+								// _target = options.target || _jBox.options.target;
+								// _target.one('click', taskHandler);
+								_target = _target || this.options.target;
+								this.taskHandler = (function (this$) {
+									return function() {
+										clickHandler.call(this$);
+									};
+								})(this)
+								_target.one('click', this.taskHandler);
+								if (options.onStart) options.onStart(task);
+							}
+
+							function onUnstart(task) {
+								_target.off('click', this.taskHandler);
+								if (options.onUnstart) options.onUnstart(task);
+							}
+
+							function onComplete(task) {
+								var $content;
+
+								$content = $(this.content.prop("outerHTML"));
+								$content.html(completionText);
+								this.updateContent($content);
+								if (options.onComplete) {
+									setTimeout(function() {
+			 							options.onComplete(task);
+									}, 0);
+								}
+							};
+
+							if (options.onNext) clickTaskDef.onNext = options.onNext;
+							if (options.onPrev) clickTaskDef.onPrev = options.onPrev;
+
+							return clickTaskDef;
+						}
 
 
 						jBoxDefs = [
@@ -134,159 +240,161 @@
 								content: 'In the middle of the page is a collection of document summaries. Each summary corresponds to a document or file that a member of our Facebook group has shared.'
 								, title: 'Document Summaries'
 								, width: $('#sidebar').outerWidth()
-								//, attach: $('#sidebar')
 								, target: $docsList
 								, position: { x: 'left ', y: 'top'}
 								, offset: { y: 68 }
 								, outside: 'x'
 								, pointTo: 'right'
-								/*, onOpen: function() {
-									$(this).trigger('click');
-								}
-								/*, position: { y: 'top' }
-								, outside: 'y'*/
+								, onNext: ensureAmandaOnOpen
 							}
 							, {
-								content: "If you click the title of a summary, you will be taken directly to that document - but ONLY if you are a member of our group AND logged in to Facebook. <strong>Only group members can view the documents!</strong><br/><br/>If you are a member but not logged in, then all you have to do is follow Facebook's prompts to log in, and once done, you will be taken to the document you chose."
+								content: "If you click the title of a summary, you will be taken directly to that document - but ONLY if you are a member of our group AND logged in to Facebook. <br/><br/><strong>Only group members can view the documents!</strong><br/><br/>If you are a member but not logged in, then all you have to do is follow Facebook's prompts to log in, and once done, you will be taken to the document you chose.<br/>"
 								, title: 'Viewing Documents'
-								, target: $('.title a', $firstEntry)
+								, target: $('.title a', $AmandaDoc)
 								, position: { y: 'bottom' }
 								, offset: { x: -85 }
 								, pointer: 'left:10'
 								, outside: 'y'
-								/*
-								, target: $('.title a', $firstEntry)
-								, width: $('.title a', $firstEntry).width()
-								, position: { x: 'right' }
-								, outside: 'x'
-								*/
+								, onNext: ensureAmandaOnOpen
+								, onPrev: ensureAmandaOnOpen
 							}
 							, {
 								content: "Below the title of each document summary is a collection of tags. These tags help you see some of the key topics mentioned in that document. You can click on a tag to hide all documents that don't have that tag. If you click on the tag a second time, it undoes that selection, and adds all those hidden documents back to the list."
 								, title: 'Tags'
-								, target: $('.tags', $firstEntry)
+								, target: $('.tags', $AmandaDoc)
 								, position: { y: 'bottom' }
 								, offset: { y: -7 }
 								, outside: 'y'
+								, onNext: ensureAmandaOnOpen
+								, onPrev: ensureAmandaOnOpen
 							}
 							, {
-								/*content: "See the tag for &quot;Nexavar&quot;/Sorafenib? See the document below called _____. Click on the tag now."
-								, title: 'Filtering by clicking tags'*/
-								//, target: $('input[value$="Sorafenib"]', $firstEntry)
-								content: "See the tag for &quot;Liver Surgery&quot;? See the document below called _____. Click on the tag now."
-								, target: $('input[value$="Liver Surgery"]', $firstEntry)
-								, position: { y: 'bottom' }
-								, repositionOnContent: true
-								, outside: 'y'
-								//, offset: { x: -250 }
-								, task: {
-									onStart: function(task) {
-										var jBox = this;
-
-										function taskHandler() {
-											alert("I was clicked!!");
-											// need to do a close/open cycle to 
-											// trigger repositioning IF the modal 
-											// doesn't change size
-											jBox.close();
-											task.complete();
-
-											// handy trick to ensure underlying DOM 
-											// changes before Modal is recomputed
-											setTimeout(function() {
-												jBox.open();
-											}, 0);
-										}
-										jBox.taskHandler = taskHandler;
-										jBox.options.target.one('click', taskHandler);
-									}
-									, onUnstart: function(task) {
-										var jBox = this;
-										alert("onUnstart!!!");
-										jBox.options.target.off(
-											'click', 
-											jBox.taskHandler
-										);
+								content: "You can filter the summaries by clicking on the tags. Let's try it out!<br/>First, make a note of the titles of the documents below. <br/><br/>Now, see the tag for &quot;Fatigue&quot;? Click on it."
+								, title: 'Filtering by clicking tags'
+								, target: $('input[value$="Fatigue"]', $AmandaDoc)
+								, position: { x: 'right' }
+								, width: $AmandaDoc.width() * 0.65
+								//, repositionOnContent: true
+								, outside: 'x'
+								, onPrev: ensureAmandaOnOpen
+								, task: makeClickTask({
+									completionText: "Awesome! You did it!!<br/><br/>Notice how the documents below Amanda's story are not the same as before? That's because the documents that were there before don't have the tag you selected. Only documents with the tag you chose are showing, and they all have that tag highlighted."
+									, onStart: function(task) {
+										task.jBox.$highlighted = highlightNextXDocs($AmandaDoc, 3, SELECTORS.DOC_LINK);
 									}
 									, onComplete: function(task) {
-										var $content
-											, jBox = this;
+										var selector;
 
-										$content = $(jBox.content.prop("outerHTML"));
-										$content.html("You did it!!");
-											/*.prepend("You did it!! ")
-											.find(".modal-footer")
-											.remove();*/
+										$.each(task.jBox.$highlighted, function(i, $node) {
+											jBox.prototype.lightOffTarget($node);
+										});
 
-										jBox.updateContent($content);
+										selector = SELECTORS.DOC_LINK + ',' + SELECTORS.activeTag('Fatigue');
+										task.jBox.$highlighted = highlightNextXDocs($AmandaDoc, 3, selector);
 									}
-								}
-								, onOpen: function() {
-									var $derrickStory = $("#490803154307273");
-
-									this.options.defaultOnOpen.call(this);
-									this.lightOnTarget($derrickStory);
-									// provide default behaviour so it doesn't get overriden
-									//this.lightOnTarget(this.options.target);
-
-								}
-								, onClose: function() {
-									var $derrickStory = $("#490803154307273");
-									
-									this.lightOffTarget($derrickStory);
-									// provide default behaviour so it doesn't get overriden
-									this.options.defaultOnClose.call(this);
-									//this.lightOffTarget(this.options.target);
-
-								}
+								})
 							}
 							, {
-								content: "Below the tags is a short summary of what the document is about. Only one line is shown by default. If the description is longer than one line than whatever does not fit is hidden. You can click the 'read more' button to see the rest of the description."
+								content: 'The sidebar contains controls to help you find the documents you are looking for. You can use it to filter the group documents you see on the right or to help you search posts in our Facebook group.'
+								, title: 'Filtering using the Sidebar'
+								, target: $('#sidebar')
+								, position: { x: 'right', y: 'top' }
+								, offset: { y: 60 }
+								, outside: 'x'
+								, onPrev: ensureAmandaOnOpen
+							}
+							, {
+								content: 'Click on the dropdown box where it says "Surgery"'
+								, title: 'Tag Selector'
+								, target: $('#sidebar .chosen-container')
+								, task: makeClickTask({
+									completionText: "Nice! As you can see, all available tags that match at least one visible document are listed here, sorted by a tag type (e.g. &quot;Treatments&quot;, &quot;Chemotherapy&quot;, etc).<br><br>Start typing in the box to narrow down the list of tags. Try typing 'nex' and you will see the &quot;Nexavar&quot;/Sorafenib comes up. If you type 'so' you will get the same result. You can search for medications based on trade name ('Nexavar') or generic name ('Sorafenib')."
+									, onComplete: function(task) {
+										task.jBox.options.offset.y = 100;
+									}
+								})
+								, position: { x: 'right' }
+								, outside: 'x'
+							}
+							, {
+								content: 'Now click on the "Add Filter" button to filter the document summaries on the right with the tag you just chose.'
+								, title: 'Apply the Tag'
+								, target: $('#sidebar .add.filter')
+								, position: { x: 'right' }
+								, outside: 'x'
+								, task: makeClickTask({
+									completionText: "Nice! As you can see on the left, all of the tags you have currently selected are listed. You can remove a tag by clicking on the 'x'"
+									, onComplete: function(task) {
+										var $newTarget = $('#sidebar .tagsList');
+
+										task.jBox.position({
+											target: $newTarget
+											, position: { x: 'right', y: 'middle' }
+										});
+
+										//jBox.prototype.lightOnTarget($newTarget);
+										task.jBox.$highlighted = [$newTarget];
+									}
+								})
+							}
+							/*, {
+								content: 'You can undo all the filtering and show all documents by clicking on this button.'
+								, title: 'Reset Filters'
+								, target: $('#sidebar .reset.filter')
+								, task: makeClickTask({
+									completionText: "Good job! Now all of the document summaries are showing on the left again."
+								})
+								, position: { x: 'right' }
+								, outside: 'x'
+							}*/
+							, {
+								content: 'Suppose you want to look for posts in our Facebook group that match the tags you have selected. Guess what? You can do just that! <br/><br/>Click the "Search" button. It will open up our Group page in a new tab, and the group posts will already be filtered based on the tags you have chosen above.'
+								, title: 'Search Facebook Posts'
+								, target: $('#searchFB')
+								, position: { x: 'right', y: 'top' }
+								, offset: { y: 60 }
+								, outside: 'x'
+							}
+							, {
+								content: "Below the tags is a short summary of what the document is about. Only one line is shown by default.<br/><br/>Click the 'read more' button to see the rest of the description."
 								, title: 'Description'
-								, target: $('.description', $firstEntry)
+								, target: $('.description', $AmandaDoc)
 								, position: { y: 'bottom' }
 								, outside: 'y'
+								, onOpen: function() {
+									$('.reset.filter').trigger('click');
+									ensureDocAtTop($AmandaDoc);
+									this.options.defaultOnOpen.call(this);
+								}
+								, task: makeClickTask({
+									completionText: "Great job! Now you can see the rest of the summary."
+									, target: $('.truncation.control.expander', $AmandaDoc)
+									, onStart: function(task) {
+										$('.truncation.control.collapser', $AmandaDoc).trigger("click");
+									}
+								})
 							}
-							, {
-								content: "If the description is long, you have to click on 'Read More' to find the link. If the document summary fits in one line, you will see the 'Suggest an Edit' link already there."
+							/*, {
+								content: "If the description is long, you have to click on 'Read More' to find the link. If the document summary fits in one line, you will see the 'Suggest an Edit' link there instead."
 								, title: 'Read More'
-								, width: $firstEntry.width()
-								, target: $('.truncation.control.expander', $firstEntry)
+								, target: $('.truncation.control.expander', $AmandaDoc)
 								, pointer: 'right'
 								, position: { y: 'bottom' }
 								, outside: 'y'
 								, onNext: function() {
-									console.log("onNext();")
-									$('.truncation.control.expander', $firstEntry).trigger("click");
+									$('.truncation.control.expander', $AmandaDoc).trigger("click");
 								}
-							}
+							}*/
 							, {
-								content: "This site is meant to be community driven - we want YOU to help make sure the content is accurate and high quality. For that reason there is a link called 'Suggest an Edit' on each document summary. If the description is long, you have to click on 'Read More' to find the link. If the document summary fits in one line, you will see the 'Suggest an Edit' link already there."
+								content: "This site is meant to be community driven - we want YOU to help make sure the content is accurate and high quality. For that reason there is a link called 'Suggest an Edit' on each document summary. If you click on it, you will be taken to a page where you can suggest changes to the document summary - different text, new tags, etc. <br/><br/>NOTE: If the description is long, you have to click on 'Read More' to find the link. If the document summary fits in one line, you will see the 'Suggest an Edit' link already there."
 								, title: 'Suggest An Edit'
-								, width: $firstEntry.width()
-								, target: $('.edit.control', $firstEntry)
-								, pointer: 'right'
-								, position: { y: 'bottom' }
-								, outside: 'y'
-								, onPrev: function() {
-									console.log("onPrev();")
-									$('.truncation.control.collapser', $firstEntry).trigger("click");
-								}
-							}
-							, {
-								content: 'The sidebar contains controls to help you find the documents you are looking for. Example: click on the dropdown box where it says "Surgery" and choose an option (e.g. "Immunotherapy") and then click "Add Filter."'
-								//, target: $("#documentsListing .entry:nth-of-type(2)")
-								, title: 'Sidebar'
-								, target: $('#sidebar')
-								, onOpen: function() {
-									this.options.defaultOnOpen.call(this);
-									$("#filterBox button").one('click', function() {
-										alert("I was added by the tour!");
-									});
-								}
-								, position: { x: 'right', y: 'top' }
-								, offset: { y: 60 }
+								, target: $('.edit.control', $AmandaDoc)
+								, position: { x: 'left' }
+								, offset: { x: -10 }
 								, outside: 'x'
+								, onOpen: function() {
+									$('.truncation.control.expander', $AmandaDoc).trigger('click');
+								}
 							}
 						    , {
 						    	content: 'Congratulations! You have completed the tour!!'
@@ -799,7 +907,9 @@
 			$el.on('change:state', function($event, eventData) {
 				new jBox('Notice', {
 					content: eventData.newValue + NOTIFICATION_CTA_HTML
+					, stack: false
 					, position: { x: 'left', y: 'bottom'}
+					, width: $(window).width()
 				});
 			});
 		}

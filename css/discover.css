@@ -99,7 +99,7 @@ border-bottom: #ffffff dotted 1px;
   vertical-align: middle;
 }
 .tagsList {
-  display: inline;
+  display: inline-block;
 }
 
 .entry .description em {

@@ -126,6 +126,16 @@ function websiteTour(module_z_index) {
 			, isCompleted: function() {
 				return _isCompleted;
 			}
+			, next: function() {
+				if (config.onNext) {
+					config.onNext.call(this.jBox, this);
+				}
+			}
+			, previous: function() {
+				if (config.onPrev) {
+					config.onPrev.call(this.jBox, this);
+				}
+			}
 		};
 
 		function initTask(config) {
@@ -140,6 +150,7 @@ function websiteTour(module_z_index) {
 		}
 
 		function unstart() {
+			console.log("unstarting task..");
 			_isStarted = false;
 			if (config.onUnstart) {
 				config.onUnstart.call(this.jBox, this);	
@@ -230,7 +241,13 @@ function websiteTour(module_z_index) {
 							, currentZ = $content.css('z-index');
 
 						save(this.index);
+
 						lightOnTarget(this.options.target);
+						if (this.$highlighted) {
+							$.each(this.$highlighted, function(i, $node) {
+								lightOnTarget($node);
+							});
+						}
 
 						// hack to get modal pointer above highlighted content
 						this.options['z-index'] = Number(currentZ) + 101;
@@ -250,11 +267,13 @@ function websiteTour(module_z_index) {
 						}
 					}
 					, defaultOnClose: function() {
-						if (this.task && !this.task.isCompleted()) {
-							this.task.unstart();
+						lightOffTarget(this.options.target);
+						if (this.$highlighted) {
+							$.each(this.$highlighted, function(i, $node) {
+								lightOffTarget($node);
+							});
 						}
 
-						lightOffTarget(this.options.target);
 					}
 					, onOpen: function() {
 						this.options.defaultOnOpen.call(this);
@@ -282,7 +301,8 @@ function websiteTour(module_z_index) {
 							addControls(this, $footer);
 						}
 
-						$footer.appendTo(this.content);						
+						$footer.appendTo(this.content);
+						$footer.before('<br/><br/>');
 					}
 				}
 				, controlBox: {
@@ -325,7 +345,6 @@ function websiteTour(module_z_index) {
 			, isStarted: function() { return isTourStarted(tourID); }
 			, isCompleted: function() { return isTourCompleted(tourID); }
 			, isSkipped: function() { return isTourSkipped(tourID); }
-//			, isPaused: isPaused
 //			, complete: completeTour
 
 			// should probably be folded into start/resume as an option
@@ -337,7 +356,6 @@ function websiteTour(module_z_index) {
 			tourLinkHelper = makeTourLinkHelper(tour, $(options.tourActionLinkEl$));
 			tourLinkHelper.init(tour);			
 		}
-
 
 		return tour;
 
@@ -444,12 +462,8 @@ function websiteTour(module_z_index) {
 		function init(jBoxDefs, options) {
 			// NOTE: not local vars!
 			currentBox = -1;
-
 			initControlsBox(options);
-
 			jBoxes = $.map(jBoxDefs, makeJBox);
-
-			attachHandlers($el);
 		}
 
 		function show() {
@@ -470,9 +484,21 @@ function websiteTour(module_z_index) {
 
 
 		function next() {
+			var task;
+
 			if (currentBox >= 0) {
 				console.log("closing box #", currentBox);
 				jBoxes[currentBox].close();
+
+				task = jBoxes[currentBox].task;
+				if (task) {
+					if (!task.isCompleted()) {
+						task.unstart();
+					}
+					// is this needed?
+					task.next();
+				}
+
 				if (jBoxes[currentBox].options.onNext) {
 					jBoxes[currentBox].options.onNext();
 				}
@@ -483,10 +509,10 @@ function websiteTour(module_z_index) {
 				
 				jBoxes[currentBox].open();
 
-				if (hasPrev()) {
+				if ($el && hasPrev()) {
 					$el.addClass('hasPrev');	
 				}					
-				if (!hasNext()) {
+				if ($el && !hasNext()) {
 					$el.removeClass('hasNext');
 					$el.addClass('hasFinish');
 				}
@@ -494,8 +520,21 @@ function websiteTour(module_z_index) {
 		}
 
 		function previous() {
+			var task;
+
 			console.log("closing box #", currentBox);
 			jBoxes[currentBox].close();
+
+			task = jBoxes[currentBox].task;
+			if (task) {
+				if (!task.isCompleted()) {
+					task.unstart();
+				}
+				// is this needed?
+				task.previous();
+			}
+
+
 			if (jBoxes[currentBox].options.onPrev) {
 				jBoxes[currentBox].options.onPrev();
 			}
@@ -505,9 +544,11 @@ function websiteTour(module_z_index) {
 				console.log("opening box #", currentBox);
 				jBoxes[currentBox].open();
 
-				$el.addClass('hasNext');
-				if (!hasPrev()) {
-					$el.removeClass('hasPrev');
+				if ($el) {
+					$el.addClass('hasNext');
+					if (!hasPrev()) {
+						$el.removeClass('hasPrev');
+					}
 				}
 			}				
 		}
@@ -517,8 +558,6 @@ function websiteTour(module_z_index) {
 			jBoxes[currentBox].close();
 		}
 
-
-		// TODO: TEST
 		function resume() {
 			var jBox
 				, stepNumber = _getLastSavedStep(tourID)
@@ -553,11 +592,9 @@ function websiteTour(module_z_index) {
 			if (tourLinkHelper) {
 				tourLinkHelper.setLinkAction('resume');
 			}
-			//jBoxes[currentBox].open();
 			currentBox -= 1;
 			next();
 		}
-
 
 		function skip(options) {
 			var key;
@@ -569,26 +606,6 @@ function websiteTour(module_z_index) {
 				tourLinkHelper.showLinkHelp();	
 			} 
 		}
-
-		
-
-		/*function isPaused() {
-			var isPausedNow,
-				isPausedBefore;
-			/*var key = _getTourStateKey(tourID, TOUR_STATES.PAUSED);
-			return getPersistedForSession(key) === 'true';//* /
-			
-			return !isCompleted() &&
-				isStarted() &&
-				!isSkipped() && 
-
-			isPausedNow = 
-				currentBox < jBoxes.length-1 &&  // if currentBox == jBoxes.length tour is finished
-				currentBox >= 0 && 				 // valid index
-				!jBoxes[currentBox].isOpen 		 // current jBox is closed
-
-		}*/
-
 
 		function completeTour() {
 			var key = _getTourStateKey(tourID, TOUR_STATES.COMPLETED);
@@ -687,9 +704,6 @@ function websiteTour(module_z_index) {
 			firstJBoxDiv.css('z-index', firstJBoxDiv.css('z-index')+101);
 			*/
 		}
-
-		/* TODO: Test these
-		*/
 
 
 
