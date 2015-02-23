@@ -126,6 +126,16 @@ function websiteTour(module_z_index) {
 			, isCompleted: function() {
 				return _isCompleted;
 			}
+			, next: function() {
+				if (config.onNext) {
+					config.onNext.call(this.jBox, this);
+				}
+			}
+			, previous: function() {
+				if (config.onPrev) {
+					config.onPrev.call(this.jBox, this);
+				}
+			}
 		};
 
 		function initTask(config) {
@@ -230,7 +240,13 @@ function websiteTour(module_z_index) {
 							, currentZ = $content.css('z-index');
 
 						save(this.index);
+
 						lightOnTarget(this.options.target);
+						if (this.$highlighted) {
+							$.each(this.$highlighted, function(i, $node) {
+								lightOnTarget($node);
+							});
+						}
 
 						// hack to get modal pointer above highlighted content
 						this.options['z-index'] = Number(currentZ) + 101;
@@ -255,6 +271,12 @@ function websiteTour(module_z_index) {
 						}
 
 						lightOffTarget(this.options.target);
+						if (this.$highlighted) {
+							$.each(this.$highlighted, function(i, $node) {
+								lightOffTarget($node);
+							});
+						}
+
 					}
 					, onOpen: function() {
 						this.options.defaultOnOpen.call(this);
@@ -468,6 +490,9 @@ function websiteTour(module_z_index) {
 			if (currentBox >= 0) {
 				console.log("closing box #", currentBox);
 				jBoxes[currentBox].close();
+				if (jBoxes[currentBox].task) {
+					jBoxes[currentBox].task.next();
+				}
 				if (jBoxes[currentBox].options.onNext) {
 					jBoxes[currentBox].options.onNext();
 				}
@@ -491,6 +516,9 @@ function websiteTour(module_z_index) {
 		function previous() {
 			console.log("closing box #", currentBox);
 			jBoxes[currentBox].close();
+			if (jBoxes[currentBox].task) {
+				jBoxes[currentBox].task.previous();
+			}
 			if (jBoxes[currentBox].options.onPrev) {
 				jBoxes[currentBox].options.onPrev();
 			}
