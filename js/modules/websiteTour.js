@@ -150,6 +150,7 @@ function websiteTour(module_z_index) {
 		}
 
 		function unstart() {
+			console.log("unstarting task..");
 			_isStarted = false;
 			if (config.onUnstart) {
 				config.onUnstart.call(this.jBox, this);	
@@ -266,10 +267,6 @@ function websiteTour(module_z_index) {
 						}
 					}
 					, defaultOnClose: function() {
-						if (this.task && !this.task.isCompleted()) {
-							this.task.unstart();
-						}
-
 						lightOffTarget(this.options.target);
 						if (this.$highlighted) {
 							$.each(this.$highlighted, function(i, $node) {
@@ -487,12 +484,21 @@ function websiteTour(module_z_index) {
 
 
 		function next() {
+			var task;
+
 			if (currentBox >= 0) {
 				console.log("closing box #", currentBox);
 				jBoxes[currentBox].close();
-				if (jBoxes[currentBox].task) {
-					jBoxes[currentBox].task.next();
+
+				task = jBoxes[currentBox].task;
+				if (task) {
+					if (!task.isCompleted()) {
+						task.unstart();
+					}
+					// is this needed?
+					task.next();
 				}
+
 				if (jBoxes[currentBox].options.onNext) {
 					jBoxes[currentBox].options.onNext();
 				}
@@ -514,11 +520,21 @@ function websiteTour(module_z_index) {
 		}
 
 		function previous() {
+			var task;
+
 			console.log("closing box #", currentBox);
 			jBoxes[currentBox].close();
-			if (jBoxes[currentBox].task) {
-				jBoxes[currentBox].task.previous();
+
+			task = jBoxes[currentBox].task;
+			if (task) {
+				if (!task.isCompleted()) {
+					task.unstart();
+				}
+				// is this needed?
+				task.previous();
 			}
+
+
 			if (jBoxes[currentBox].options.onPrev) {
 				jBoxes[currentBox].options.onPrev();
 			}
@@ -688,9 +704,6 @@ function websiteTour(module_z_index) {
 			firstJBoxDiv.css('z-index', firstJBoxDiv.css('z-index')+101);
 			*/
 		}
-
-		/* TODO: Test these
-		*/
 
 
 
