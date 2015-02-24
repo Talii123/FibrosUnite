@@ -10,6 +10,7 @@
 		, BASE_DIR = location.protocol.charAt(0) === 'h' ? "" : ".."
 		//, MODULES_DIR_ID = "f38196f"
 		, filteredTagsMap = {}
+		, $resetTagsFilter
 
 		, FEATURES = {
 			"suggestEdit" : {
@@ -1335,6 +1336,8 @@
 		}		
 
 		$docsList.trigger("unselectTag", aTagName);
+
+		updateResetTagsFilter();
 	}
 
 	function selectTag(aTagName) {
@@ -1368,12 +1371,23 @@
 			$(NULL_RESULTS_MSG_SEL).removeClass('hidden');
 		}
 		$docsList.trigger("selectTag", aTagName);
+
+		updateResetTagsFilter();
 	}
 
 	function getVisibleDocuments() {
 		return $(".entry", $docsList)
 				.not('.hidden')
 				.not(NULL_RESULTS_MSG_SEL);
+	}
+
+	function updateResetTagsFilter() {
+		if ($.isEmptyObject(filteredTagsMap)) {
+			$resetTagsFilter.attr('disabled', true);
+		}
+		else {
+			$resetTagsFilter.attr('disabled', false);
+		}
 	}
 
 
@@ -1575,11 +1589,13 @@
 			.insertBefore("#appliedTags .tagsList")
 			.before($(f_createTagSelectorHTML()).attr({"id" : ADD_TAG_FILTER_SELECTOR_ID}))
 			.after("<br/>");
-		$("<button class='reset filter'>Reset Filters</button>")
-			.on('click', function() {
-				$("[name='removeTagFilter']").trigger("click");
-			})
-			.insertAfter("#appliedTags .add.filter");
+
+		$resetTagsFilter = $("<button class='reset filter'>Reset Filters</button>");
+		$resetTagsFilter.on('click', function() {
+			$("[name='removeTagFilter']").trigger("click");
+		})
+		$resetTagsFilter.insertAfter("#appliedTags .add.filter");
+
 		$(".helpLink").on("click", function($event) {
 			$event.preventDefault();
 			$("#helpText").slideToggle();
@@ -1610,6 +1626,8 @@
 		// to bind to a promise
 		loadPageState();
 
+		$resetTagsFilter = $('.reset.filter');
+		updateResetTagsFilter();
 		console.log("Done initializing App.Discover");
 	}
 
