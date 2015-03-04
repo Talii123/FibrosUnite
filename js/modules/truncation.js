@@ -69,3 +69,7 @@ function makeTruncationHelper($container, toTruncateSelector) {
 		}
 	};
 }
+
+/*window.App = window.App || {};
+window.App.Utils = window.App.Utils || {};
+window.App.Utils.makeTruncationHelper = makeTruncationHelper;*/

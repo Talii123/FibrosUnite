@@ -8,7 +8,6 @@
 		, ADD_TAG_FILTER_SELECTOR_ID = "AddTagFilterSelector"
 		, HAS_OWN = Object.prototype.hasOwnProperty
 		, BASE_DIR = location.protocol.charAt(0) === 'h' ? "" : ".."
-		//, MODULES_DIR_ID = "f38196f"
 		, filteredTagsMap = {}
 		, $resetTagsFilter
 
