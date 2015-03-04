@@ -22,17 +22,55 @@ $(function() {
 
 
 	function initSuggestedDescription($suggested, $currentDescription) {
-		var height = $currentDescription.height(),
-			width = $currentDescription.closest(".entry").width();
+		var preTruncationDescHeight
+			, usedHeight = 0
+			, maxHeight
+			, lineHeight
+			, suggestedHeight
+			, suggestedDescription
+			, $descriptionContainer
+			, f_addHeight
+			;
 
-		console.log("height: ", height, "\n width: ", width);
 
-		$suggested.val($currentDescription.html()
+		lineHeight = parseInt($currentDescription.css('lineHeight'));
+		suggestedDescription = $currentDescription.html();
+		preTruncationDescHeight = $currentDescription.height();
+
+		// do truncation
+		makeTruncationHelper($('.entry'), '.t').init();
+
+		f_addHeight = function() {
+			usedHeight += $(this).outerHeight(true);
+		};
+		$descriptionContainer = $suggested.parent();
+		$descriptionContainer.prevAll('h2, .entry').each(f_addHeight);
+		$descriptionContainer.nextAll().not(':hidden').each(f_addHeight);
+
+		maxHeight = $('#main').height() - usedHeight;
+		suggestedHeight = preTruncationDescHeight <= maxHeight ?
+			preTruncationDescHeight :
+			maxHeight;
+
+		$suggested.val(suggestedDescription
 			.replace(/<br>/g,  '\n')
 			.replace(/<\/?em>/g, '')
-		).height(height)
-		.width(width)
+		)
+		.width($currentDescription.closest('.entry').width())
 		.keyup(updateHandler);
+
+		if (suggestedHeight < 2 * lineHeight) {
+			$suggested.height(suggestedHeight);
+		}
+		else {
+			$suggested.outerHeight(suggestedHeight);
+		}
+
+		if (suggestedHeight != maxHeight) {
+			$suggested.one('focus', function() {
+				$suggested.outerHeight(maxHeight);
+			})
+		}
 	}
 
 	function getOptionsValues($optionGroup) {
@@ -183,6 +221,7 @@ $(function() {
 		return isDirty;
 	}
 
+
 	$("#propertySelector").on("change", function($event) {
 		var selectedID = $($event.target).val();
 
@@ -223,7 +262,6 @@ $(function() {
 		// prefilled for the user
 		if (!dirtyProperties.descriptions) $suggestedDescription.val("");
 	});
-
 	
 	$selectedTags.append($currentOptGroup);
 	$tagsList.find("input[name='filterByTag']")

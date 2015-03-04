@@ -1,4 +1,7 @@
 
+#suggestAnEdit #tags select optgroup:nth-of-type(1) {
+	display: none;
+}
 
 .edit.control {
 	position: relative;
@@ -6,8 +9,8 @@
 }
 
 #suggestAnEdit {
-	margin: 1em auto;
-	width: 80%;	
+	margin: 0 auto;
+	width: 80%;
 }
 
 #suggestAnEdit input[type='submit'] {

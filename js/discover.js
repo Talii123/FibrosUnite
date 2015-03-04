@@ -8,7 +8,6 @@
 		, ADD_TAG_FILTER_SELECTOR_ID = "AddTagFilterSelector"
 		, HAS_OWN = Object.prototype.hasOwnProperty
 		, BASE_DIR = location.protocol.charAt(0) === 'h' ? "" : ".."
-		//, MODULES_DIR_ID = "f38196f"
 		, filteredTagsMap = {}
 		, $resetTagsFilter
 
@@ -23,7 +22,9 @@
 			}
 			, "truncation" : {
 				name: "truncation helper"
-				, builder: makeTrucationHelper
+				, builder: function() {
+					return makeTruncationHelper($docsList, '.t');
+				}
 			}
 			, "stateDescriptor" : {
 				name: "state descriptor"
@@ -492,86 +493,6 @@
 						"class": "edit control",
 						"target": "_blank"
 					}).appendTo($this);
-				});
-			}
-		};
-	}
-
-	function makeTrucationHelper() {
-		var NEWLINE_REPLACEMENT_CHAR = "¶"
-		  	, NEWLINE_REPLACEMENT_MATCHER = RegExp("(\s)?" + NEWLINE_REPLACEMENT_CHAR + "(\s)?", "g")
-			//, CSS_TO_ADD = "/* inserted by truncation */"
-			;
-
-		/*function insertCSS() {
-			$("head").append("<style>"+CSS_TO_ADD+"</style>");
-		}*/
-
-		function createReadMoreHTML(isHidden) {
-			return "<span class='truncation control expander" + 
-				(isHidden ? " hidden " : "") +
-			 	"'>Read More</span>";
-		}
-
-		function createReadLessHTML(isHidden) {
-			return "<span class='truncation control collapser" + 
-				(isHidden ? " hidden " : "") +
-				"'>Read Less</span>";
-		}
-
-		function insertHTML() {
-			var HTML_TO_ADD = createReadLessHTML(true) + createReadMoreHTML(false);
-			$("#documentsListing .description").prepend(HTML_TO_ADD);
-		}
-
-		function onReadMore($event) {
-			var $src = $($event.target);
-
-			expand($src.nextAll(".t"));
-			$src.parent().find(".control").removeClass("hidden");
-			//$src.prev(".truncation.collapser").removeClass("hidden");
-			$src.addClass("hidden");
-		}
-
-		function onReadLess($event) {
-			var $src = $($event.target);
-
-			truncate($src.nextAll(".t"));
-			$src.parent().find(".control").addClass("hidden");
-			$src.next(".truncation.expander").removeClass("hidden");
-			//$src.addClass("hidden");
-		}
-
-		function truncate($el) {
-			$el.html($el.html().replace(/<br(\s)*(\/)?>/g, " " + NEWLINE_REPLACEMENT_CHAR + " "));
-			$el.addClass("truncated");
-		}
-
-		function expand($el) {
-			$el.html($el.html().replace(NEWLINE_REPLACEMENT_MATCHER, "<br/>"));
-			$el.removeClass("truncated");
-		}
-
-		function bindHandlers() {
-			$docsList.on("click", ".truncation.expander", onReadMore);
-			$docsList.on("click", ".truncation.collapser", onReadLess);
-		}
-
-		return {
-			init: function() {
-				//insertCSS();
-				insertHTML();
-				bindHandlers();
-				$("#documentsListing .t").each(function() {
-					var $this = $(this),
-						heightBeforeTruncation = $this.height();
-
-					truncate($this);
-					if ($this.height() * 1.5 > heightBeforeTruncation) {
-						$this.prevAll(".truncation.control").remove();
-						expand($this);
-						$this.addClass("notTruncatable");
-					}
 				});
 			}
 		};
