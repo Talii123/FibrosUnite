@@ -15,14 +15,12 @@
 
     <body>
     	<div id="fb-root"></div>
-	    <div id="header">
-	    	<a href="http://fibrolamellar.info">
-	    		<img src="img/fibrologo.png"/>fibrolamellar.info
-	    	</a> 
-	    	<ul>
-	    		<li>About</li>
-		    </ul>
-	    </div>
+		<div id="header">
+			<nav id="global">
+				<a href="http://fibrolamellar.info"><img src="/img/fibrologo.png"></a>
+				<span id="domain">fibrolamellar.info </span>
+			</nav>
+		</div>
 
 		<div id="main">   
 			<div class="loginHelper entry" style="display:none">
@@ -70,23 +68,36 @@
 		</div>    
      	
 	    <!-- //-beg- concat_js -->
-		<script src="js/vendor/arrays.js"></script>
-		<script src="js/vendor/jquery-1.9.1.min.js"></script>
-		<script src="js/vendor/jquery.cookie.js"></script>
-		<script src="js/updatePageByLoginStatus.js"></script>
-		<!--<script src="js/noconsole.js"></script>-->
-	    <script src="js/plugins.js"></script>
-	    <script src="js/main.js"></script>
-		<!-- this should only be on login pages; might want to bundle here so it can be 
-		pre-loaded so that the FB SDK can be pre-fetched, but not 100% sure that works
-		<script src="js/login.js"></script>-->
-		<script src="js/discover.js"></script>
-		<script src="js/loadGoogleAnalytics.js"></script>
-		<script src="js/loadUserVoice.js"></script>
-		<!-- //-beg- concat_js -->
+    <!-- //-beg- concat_js -->
+	<script src="js/vendor/arrays.js"></script>
+	<script src="js/vendor/jquery-1.11.1.min.js"></script>
+	<script src="js/vendor/jquery.cookie.js"></script>
+	<script src="js/vendor/jBox-0.3.2.js"></script>
+	<script src="js/vendor/chosen.jquery.min.js"></script>
+	<script src="js/featureEnabler.js"></script>
+	<script src="js/utils.js"></script>
+	<script src="js/modules/simple-persistence.js"></script>
+	<script src="js/modules/truncation.js"></script>
+	<script src="js/modules/websiteTour.js"></script>
+
+	<script src="js/updatePageByLoginStatus.js"></script>
+	<!--<script src="js/noconsole.js"></script>-->
+    <script src="js/plugins.js"></script>
+    <script src="js/main.js"></script>
+	<!-- this should only be on login pages; might want to bundle here so it can be 
+	pre-loaded so that the FB SDK can be pre-fetched, but not 100% sure that works
+	<script src="js/login.js"></script>-->
+	<script src="js/menu.js"></script>
+    <script src="js/mobileMenu.js"></script>
+	<script src="js/discover.js"></script>
+	<script src="js/tagsToTagGroups.js"></script>
+		<!-- //-end- concat_js -->
+
+	<script src="js/f0da2c1/truncation.js"></script>
+	<script src="js/f0da2c1/suggestAnEdit.js"></script>
 		
-		<script>
-		$("body").on("click", ".button.close", makeCloseAndFillFunc($(".loginHelper"), $(".option-block"), $("#main")));
-		</script>
+	<script>
+	$("body").on("click", ".button.close", closeAndPullUpHandler);
+	</script>
     </body>
 </html>

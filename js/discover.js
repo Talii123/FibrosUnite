@@ -76,7 +76,7 @@
 			, "websiteTour" : {
 				requires: {
 					test: function() {
-						return typeof tour === "function";
+						return typeof websiteTour === "function";
 					}
 					, url: (function() {
 						return BASE_DIR ? 
