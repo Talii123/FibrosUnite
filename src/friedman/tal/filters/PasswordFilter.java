@@ -18,7 +18,7 @@ import org.slf4j.LoggerFactory;
 import fibrolamellar.info.resources.FibrosUniteApplication;
 
 
-public class PasswordFilter extends AbstractGuardFilter implements Filter {
+public class PasswordFilter extends AbstractLoginGuardFilter implements Filter {
 	private static final Logger LOGGER = LoggerFactory.getLogger(PasswordFilter.class);
 
 	@Override

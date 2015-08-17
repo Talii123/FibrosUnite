@@ -31,6 +31,7 @@ public class FibrosUniteApplication extends BaseApplication {
 		singletonsSet.add(theLoginResource);
 		
 		singletonsSet.add(new AdminResource());
+		singletonsSet.add(new SysAdminResource());
 		singletonsSet.add(new MapResource());
 		
 		//singletonsSet.add(new DummyResource());

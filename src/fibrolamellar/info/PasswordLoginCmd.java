@@ -2,6 +2,7 @@ package fibrolamellar.info;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 
 import org.slf4j.LoggerFactory;
 import org.slf4j.Logger;
@@ -22,7 +23,8 @@ public class PasswordLoginCmd extends AbstractLoginCmd {
 		boolean isLoginSuccessful = false;
 		if (Password.isValid(this._password)) {
 			LOGGER.debug("Password is valid.  Going to create a new session now.");
-			createNewSession(null);
+			HttpSession session = createNewSession(null);
+			session.setAttribute("isLoggingEnabled", new Boolean(true));
 			isLoginSuccessful = true;
 		}
 		else {

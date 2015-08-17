@@ -1,7 +1,5 @@
 package friedman.tal.filters;
 
-import static deprecated.fibrolamellar.info.TestSessionHelper.isTestSessionDestroyRequested;
-import static deprecated.fibrolamellar.info.TestSessionHelper.isTestSessionTriggered;
 import static friedman.tal.util.Helpers.redirectToLogin;
 
 import java.io.IOException;
@@ -14,53 +12,30 @@ import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
-
-import org.slf4j.LoggerFactory;
 
 import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public abstract class AbstractGuardFilter implements Filter {
 	private static final Logger LOGGER = LoggerFactory.getLogger(AbstractGuardFilter.class);
 	
-	protected static final String ERROR_MSG_LOGIN_WAS_UNSUCCESSFUL = "login was unsuccessful";
-	protected static final String ERROR_MSG_SESSION_WAS_INVALIDATED = "session was invalidated";
-
 	
 	@Override
 	public void destroy() {
+		// TODO Auto-generated method stub
+
 	}
 
 	@Override
-	public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain filterChain) 
-			throws IOException, ServletException {
-		HttpServletRequest request = (HttpServletRequest)servletRequest;
-		HttpServletResponse response = (HttpServletResponse)servletResponse;
-		HttpSession session = request.getSession(false);
-		if (session != null) {
-			// TODO should probably remove this at some point..
-			if (isTestSessionDestroyRequested(request)) {
-				session.invalidate();
-				deny(request, response, ERROR_MSG_SESSION_WAS_INVALIDATED);
-			}
-			else {
-				permit(request, response, filterChain);
-			}
-		}
-		// TODO should probably remove this at some point..
-		else if (isTestSessionTriggered(request)) {
-			permit(request, response, filterChain);
-		}
-		else {
-			tryToCreateSession(filterChain, request, response);
-		}
+	public abstract void doFilter(ServletRequest arg0, ServletResponse arg1,
+			FilterChain arg2) throws IOException, ServletException;
+	
+	@Override
+	public void init(FilterConfig arg0) throws ServletException {
+		// TODO Auto-generated method stub
 
 	}
-	
-	protected abstract void tryToCreateSession(FilterChain filterChain, HttpServletRequest request, HttpServletResponse response) 
-			throws ServletException, IOException;
 
-	
 	protected void permit(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) 
 			throws IOException, ServletException {
 		LOGGER.info("\n\n session exists, so allowing request to proceed..\n\n");
@@ -77,9 +52,5 @@ public abstract class AbstractGuardFilter implements Filter {
 		redirectToLogin(request, response, page);
 	}	
 
-
-	@Override
-	public void init(FilterConfig arg0) throws ServletException {
-	}
-
+	
 }

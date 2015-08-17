@@ -17,7 +17,7 @@ import org.slf4j.LoggerFactory;
 import fibrolamellar.info.resources.FibrosUniteApplication;
 
 
-public class MemberFilter extends AbstractGuardFilter implements Filter {
+public class MemberFilter extends AbstractLoginGuardFilter implements Filter {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(MemberFilter.class);
 	
@@ -25,6 +25,7 @@ public class MemberFilter extends AbstractGuardFilter implements Filter {
 	@Override
 	protected void tryToCreateSession(FilterChain filterChain, HttpServletRequest request, HttpServletResponse response) 
 			throws ServletException, IOException {
+		
 		
 		try {			
 			boolean isLoginSuccessful = FibrosUniteApplication.getLoginResource().doFacebookLogin(request, response);

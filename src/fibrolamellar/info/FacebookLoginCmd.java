@@ -1,6 +1,9 @@
 package fibrolamellar.info;
 
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -27,12 +30,37 @@ public class FacebookLoginCmd extends AbstractLoginCmd {
 		super(request, response);
 	}
 	
+	public static StringBuilder readInputStream(InputStream in) {
+		StringBuilder sb = new StringBuilder();
+		BufferedReader reader = new BufferedReader(new InputStreamReader(in));
+		
+		try {
+			String line = reader.readLine();
+			while (line != null) {
+				sb.append(line);
+				line = reader.readLine();
+			}
+			
+			reader.close();
+			
+		} catch (IOException ioe) {
+			System.err.println(ioe);
+			ioe.printStackTrace(System.err);
+		}
+		
+		return sb;
+	}
+	
 	@Override
 	public boolean doLogin() throws IOException {
 		LOGGER.trace("doLogin()...");
 		
 		ObjectMapper mapper = new ObjectMapper();
-		FBLoginResponse loginResponse = mapper.readValue(this._request.getInputStream(), FBLoginResponse.class);
+		//FBLoginResponse loginResponse = mapper.readValue(this._request.getInputStream(), FBLoginResponse.class);
+		StringBuilder sb = readInputStream(this._request.getInputStream());
+		String fbLoginResponseString = sb.toString();
+		System.out.println("\n\n fbLoginResponseString: "+ fbLoginResponseString + "\n\n");
+		FBLoginResponse loginResponse = mapper.readValue(fbLoginResponseString, FBLoginResponse.class);
 
 		// check this first as it's the cheapest operation
 		ensureGroupMember(loginResponse);
