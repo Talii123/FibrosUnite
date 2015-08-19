@@ -408,7 +408,8 @@
         <!-- This is a private target -->
         <echo message="Cleaning up previous build directory..."/>
         <delete dir="./${dir.intermediate}/"/>
-        <delete dir="./${dir.publish}/"/>
+        <delete dir="./${dir.publish}/js/"/>
+        <delete file="./${dir.publish}/WEB-INF/jspf/vars.jspf" />
     </target>
     <target name="compile">
       <javac
@@ -710,6 +711,14 @@
             </then>
         </if>
         <foreach list="${file.stylesheets}" param="css_file" target="-css-remove-concatenated-stylesheets" />
+
+        <echo file="${dir.publish}/WEB-INF/jspf/vars.jspf">
+&lt;%
+ final String MINIFIED_CSS = "/${style.css}";
+ final String JS_MODULES_DIR_ID = "${modules.sha}";
+ final String MINIFIED_JS_MAIN = "/${scripts.js}";
+%&gt;
+        </echo>
     </target>
     <target name="-htmlclean" depends="-usemin">
         <echo message="Run htmlcompressor on the HTML"/>
