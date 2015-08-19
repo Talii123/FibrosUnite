@@ -1,7 +1,16 @@
 
 function setupFacebookLogin() {
-	var currentPage = location.pathname;
-	if (currentPage != '/' && currentPage != '/home.html' && currentPage != '/login.html') return;
+	var currentPage = location.pathname
+		, PAGE_ALLOWS_LOGIN = {
+			'/' : true
+			, '/home.html' : true
+			, '/login.html' : true
+		};
+
+	if (!PAGE_ALLOWS_LOGIN[currentPage]) {
+		console.log("NOT setting up FB login because this page does not allow/support it.");
+		return;
+	}
 
 	console.log("setting up FB login..");
 	window.fbAsyncInit = function() {
@@ -16,12 +25,18 @@ function setupFacebookLogin() {
 
 
 	(function(d){
-	var js, id = 'facebook-jssdk', ref = d.getElementsByTagName('script')[0];
-	if (d.getElementById(id)) {return;}
-	js = d.createElement('script'); js.id = id; js.async = true;
-	js.src = "//connect.facebook.net/en_US/all.js";
-	ref.parentNode.insertBefore(js, ref);
-	}(document));	
+		var js
+			, id = 'facebook-jssdk'
+			, ref = d.getElementsByTagName('script')[0];
+
+		if (d.getElementById(id)) return;
+
+		js = d.createElement('script');
+		js.id = id;
+		js.async = true;
+		js.src = "//connect.facebook.net/en_US/all.js";
+		ref.parentNode.insertBefore(js, ref);
+	} (document));
 }
 
 function initLogin() {
