@@ -79,18 +79,18 @@
 	<script src="js/vendor/jquery.cookie.js"></script>
 	<script src="js/vendor/jBox-0.3.2.js"></script>
 	<script src="js/vendor/chosen.jquery.min.js"></script>
-	<script src="js/featureEnabler.js"></script>
+
 	<script src="js/utils.js"></script>
+
+	<script src="js/featureEnabler.js"></script>
 	<script src="js/modules/simple-persistence.js"></script>
 	<script src="js/modules/truncation.js"></script>
 	<script src="js/modules/websiteTour.js"></script>
 
-	<script src="js/updatePageByLoginStatus.js"></script>
-
 	<script src="js/main.js"></script>
 	<!-- this should only be on login pages; might want to bundle here so it can be 
-	pre-loaded so that the FB SDK can be pre-fetched, but not 100% sure that works
-	<script src="js/login.js"></script>-->
+	pre-loaded so that the FB SDK can be pre-fetched, but not 100% sure that works-->
+	<script src="js/login.js"></script>
 	<script src="js/menu.js"></script>
 	<script src="js/mobileMenu.js"></script>
 	<script src="js/discover.js"></script>
@@ -102,6 +102,26 @@
 		
 	<script>
 	$("body").on("click", ".button.close", closeAndPullUpHandler);
+
+	(function() {
+		var CHECK_IF_LOGIN_BUTTON_RENDERED_INTERVAL = 1000
+			, SELECTORS = {
+				LOGIN_BUTTON : ".fb-login-button[fb-xfbml-state='rendered']"
+				, LOGIN_HELPER : ".loginHelper"
+			}, interval;
+
+		if (!window.App.Utils.isLoggedIn()) {
+			interval = setInterval(function() {
+				var isButtonRendered = $(SELECTORS.LOGIN_BUTTON).length > 0;
+
+				if (isButtonRendered) {
+					$(SELECTORS.LOGIN_HELPER).slideDown();
+					clearInterval(interval);
+				}
+			}, CHECK_IF_LOGIN_BUTTON_RENDERED_INTERVAL);
+		}
+	})();
+
 	</script>
     </body>
 </html>
