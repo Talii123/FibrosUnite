@@ -712,6 +712,13 @@
         </if>
         <foreach list="${file.stylesheets}" param="css_file" target="-css-remove-concatenated-stylesheets" />
 
+        <echo message="Doing Tal's custom build mods now..." />
+        <echo>
+          Creating new vars.jspf file with values:
+            CSS = /${style.css}
+            JS_MODULES_DIR_ID = ${modules.sha}
+            MINIFIED_JS_MAIN = /${scripts.js}
+        </echo>
         <echo file="${dir.publish}/WEB-INF/jspf/vars.jspf">
 &lt;%
  final String MINIFIED_CSS = "/${style.css}";
@@ -719,6 +726,28 @@
  final String MINIFIED_JS_MAIN = "/${scripts.js}";
 %&gt;
         </echo>
+
+        <echo message="Updating references to these assets in html files"/>
+        <replaceregexp
+          match="\$\{MINIFIED_CSS\}"
+          replace="${style.css}"
+          flags="gs">
+          <fileset dir="${dir.intermediate}" includes="${page-files}" />
+        </replaceregexp>
+        <replaceregexp
+          match="\$\{JS_MODULES_DIR_ID\}"
+          replace="${modules.sha}"
+          flags="gs">
+          <fileset dir="${dir.intermediate}" includes="${page-files}" />
+        </replaceregexp>
+        <replaceregexp
+          match="\$\{MINIFIED_JS_MAIN\}"
+          replace="${scripts.js}"
+          flags="gs">
+          <fileset dir="${dir.intermediate}" includes="${page-files}" />
+        </replaceregexp>
+
+        <echo message="DONE doing Tal's custom build mods!" />
     </target>
     <target name="-htmlclean" depends="-usemin">
         <echo message="Run htmlcompressor on the HTML"/>
