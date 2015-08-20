@@ -98,11 +98,29 @@
 	<script src="js/tagsToTagGroups.js"></script>
 	<!-- //-end- concat_js -->
 
+	<!-- load these async both to prevent blocking page and to autoupdate
+	when module id changes
 	<script src="js/81a2d1c/truncation.js"></script>
 	<script src="js/81a2d1c/suggestAnEdit.js"></script>
-		
+	-->
+
 	<script>
 	$("body").on("click", ".button.close", closeAndPullUpHandler);
+
+	// pre-cache these scripts for the edit page
+	(function() {
+		var SCRIPTS_TO_PRECACHE = [
+				'truncation'
+				, 'suggestAnEdit'
+				, 'glossary'
+			];
+
+		$.each(SCRIPTS_TO_PRECACHE, function(index, scriptName) {
+			var scriptURL = 'js/' + MODULES_DIR_ID + '/' + scriptName + '.js';
+			window.App.Utils.loadScript(scriptURL, { id: scriptName });
+		})
+
+	})();
 
 	(function() {
 		var CHECK_IF_LOGIN_BUTTON_RENDERED_INTERVAL = 1000

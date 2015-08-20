@@ -40,3 +40,21 @@ window.App.Utils.isLoggedIn = function () {
 		return isSession;
 	}
 };
+
+// slight tweak of code provide by Facebook for login
+window.App.Utils.loadScript = function(src, options) {
+	var js
+		, id = options.id
+		, doc = options.doc || window.document
+		, ref = doc.getElementsByTagName('script')[0]
+		;
+
+	// only load script once
+	if (id && doc.getElementById(id)) return;
+
+	js = doc.createElement('script');
+	js.src = src;
+	if (id) js.id = id;
+	js.async = options.async || true;
+	ref.parentNode.insertBefore(js, ref);
+}
