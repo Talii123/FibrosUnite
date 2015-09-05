@@ -68,7 +68,9 @@
 						instance = FEATURES["glossary"].instance;
 						return instance != null && instance.isLoaded();
 					}
-					, url: BASE_DIR + "/js/glossary.js"
+					, url: (BASE_DIR ?
+							BASE_DIR + "/js/modules/glossary.js" :
+							"/js/" + MODULES_DIR_ID + "/glossary.js")
 				}
 				, name: "glossary"
 				, builder: makeGlossary
@@ -78,11 +80,9 @@
 					test: function() {
 						return typeof websiteTour === "function";
 					}
-					, url: (function() {
-						return BASE_DIR ? 
-							 BASE_DIR + "/js/modules/websiteTour.js" :
-							 "/js/" + MODULES_DIR_ID + "/websiteTour.js" ;
-					})()
+					, url: (BASE_DIR ? 
+							BASE_DIR + "/js/modules/websiteTour.js" :
+							"/js/" + MODULES_DIR_ID + "/websiteTour.js")
 				}
 				, name: "websiteTour"
 				, builder: function() {  //makeDiscoverTour
