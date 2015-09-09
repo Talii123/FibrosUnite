@@ -1,13 +1,9 @@
 package fibrolamellar.info;
 
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
 
 import org.codehaus.jackson.map.ObjectMapper;
 import org.slf4j.Logger;
@@ -18,52 +14,35 @@ import fibrolamellar.info.models.FBLoginResponse;
 import fibrolamellar.info.models.FBLoginStatusEnum;
 import fibrolamellar.info.resources.FacebookRequester;
 import fibrolamellar.info.resources.FibrosUniteApplication;
+import friedman.tal.util.Helpers;
 
 public class FacebookLoginCmd extends AbstractLoginCmd {
 	private static final Logger LOGGER = LoggerFactory.getLogger(FacebookLoginCmd.class);
 	
 	private static final String ERROR_MSG_INVALID_ACCESS_TOKEN = "Invalid Access Token";
-	private static final String FB_USER_ID_SESSION_ATTR_NAME = "fbUserID";
+	//private static final String FB_USER_ID_SESSION_ATTR_NAME = "fbUserID";
 	
 	
 	public FacebookLoginCmd(HttpServletRequest request, HttpServletResponse response) {
 		super(request, response);
 	}
 	
-	public static StringBuilder readInputStream(InputStream in) {
-		StringBuilder sb = new StringBuilder();
-		BufferedReader reader = new BufferedReader(new InputStreamReader(in));
-		
-		try {
-			String line = reader.readLine();
-			while (line != null) {
-				sb.append(line);
-				line = reader.readLine();
-			}
-			
-			reader.close();
-			
-		} catch (IOException ioe) {
-			System.err.println(ioe);
-			ioe.printStackTrace(System.err);
-		}
-		
-		return sb;
-	}
+
 	
 	@Override
 	public boolean doLogin() throws IOException {
 		LOGGER.trace("doLogin()...");
 		
+		String fbLoginResponseString = Helpers.convertStreamToString(this._request.getInputStream());
+		LOGGER.trace("\n\n fbLoginResponseString: "+ fbLoginResponseString + "\n\n");		
+		if (Helpers.empty(fbLoginResponseString)) {
+			return false;
+		}
+
 		ObjectMapper mapper = new ObjectMapper();
-		//FBLoginResponse loginResponse = mapper.readValue(this._request.getInputStream(), FBLoginResponse.class);
-		StringBuilder sb = readInputStream(this._request.getInputStream());
-		String fbLoginResponseString = sb.toString();
-		System.out.println("\n\n fbLoginResponseString: "+ fbLoginResponseString + "\n\n");
 		FBLoginResponse loginResponse = mapper.readValue(fbLoginResponseString, FBLoginResponse.class);
 
-		// check this first as it's the cheapest operation
-		ensureGroupMember(loginResponse);
+		ensureGroupMember(loginResponse);		// check this first as it's the cheapest operation
 		authenticateResponse(loginResponse);
 		
 		createNewSession(loginResponse.authResponse);

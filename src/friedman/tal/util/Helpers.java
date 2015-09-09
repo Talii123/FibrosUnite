@@ -45,7 +45,7 @@ public class Helpers {
 		reader.close();
 		return sb.toString();
 	}
-	
+
 	public static StringBuilder getCookieData(Cookie aCookie) {
 		StringBuilder sb = new StringBuilder();
 		if (aCookie == null) {

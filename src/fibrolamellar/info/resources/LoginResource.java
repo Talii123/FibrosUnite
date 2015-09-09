@@ -72,7 +72,7 @@ public class LoginResource extends BaseResource {
 	public Response pwLogin(@Context HttpServletRequest request, @Context HttpServletResponse response) {
 		try {
 			String body = Helpers.getRequestBody(request);
-			boolean isLoginSuccessful = doPasswordLogin(request, response, body);
+			boolean isLoginSuccessful = doPasswordFormLogin(request, response, body);
 			String nextPageURL = getNextPageURL(body);
 			if (isLoginSuccessful) {
 				LOGGER.debug("login successful!");
@@ -109,11 +109,11 @@ public class LoginResource extends BaseResource {
 	}	
 	
 	public boolean doPasswordLogin(HttpServletRequest request, HttpServletResponse response) throws IOException {
-		String body = Helpers.getRequestBody(request);
-		return doPasswordLogin(request, response, body);
+		String password = request.getParameter(PASSWORD_PARAM_NAME);
+		return new PasswordLoginCmd(request, response, password).doLogin();
 	}
 	
-	public boolean doPasswordLogin(HttpServletRequest request, HttpServletResponse response, String body) throws IOException {
+	public boolean doPasswordFormLogin(HttpServletRequest request, HttpServletResponse response, String body) throws IOException {
 		String password = extractPassword(body);		
 		return new PasswordLoginCmd(request, response, password).doLogin();		
 	}

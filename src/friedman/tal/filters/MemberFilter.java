@@ -26,6 +26,7 @@ public class MemberFilter extends AbstractLoginGuardFilter implements Filter {
 	protected void tryToCreateSession(FilterChain filterChain, HttpServletRequest request, HttpServletResponse response) 
 			throws ServletException, IOException {
 		
+		LOGGER.debug("[MemberFilter] trying to create session..");
 		
 		try {			
 			boolean isLoginSuccessful = FibrosUniteApplication.getLoginResource().doFacebookLogin(request, response);

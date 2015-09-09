@@ -25,8 +25,10 @@ public class PasswordFilter extends AbstractLoginGuardFilter implements Filter {
 	protected void tryToCreateSession(FilterChain filterChain, HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
 		
+		LOGGER.debug("[PasswordFilter] trying to create session..");
+		
 		try {			
-			boolean isLoginSuccessful = FibrosUniteApplication.getLoginResource().doFacebookLogin(request, response);
+			boolean isLoginSuccessful = FibrosUniteApplication.getLoginResource().doPasswordLogin(request, response);
 			if (isLoginSuccessful) {
 				LOGGER.debug("login successful so permitting request to continue to the next filter/servlet.");
 				permit(request, response, filterChain);

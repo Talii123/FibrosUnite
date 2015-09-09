@@ -19,22 +19,6 @@ import org.slf4j.LoggerFactory;
 public abstract class AbstractGuardFilter implements Filter {
 	private static final Logger LOGGER = LoggerFactory.getLogger(AbstractGuardFilter.class);
 	
-	
-	@Override
-	public void destroy() {
-		// TODO Auto-generated method stub
-
-	}
-
-	@Override
-	public abstract void doFilter(ServletRequest arg0, ServletResponse arg1,
-			FilterChain arg2) throws IOException, ServletException;
-	
-	@Override
-	public void init(FilterConfig arg0) throws ServletException {
-		// TODO Auto-generated method stub
-
-	}
 
 	protected void permit(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) 
 			throws IOException, ServletException {
@@ -53,4 +37,16 @@ public abstract class AbstractGuardFilter implements Filter {
 	}	
 
 	
+	@Override
+	public void destroy() {
+	}
+
+	@Override
+	public abstract void doFilter(ServletRequest arg0, ServletResponse arg1,
+			FilterChain arg2) throws IOException, ServletException;
+	
+	@Override
+	public void init(FilterConfig arg0) throws ServletException {
+	}
+
 }
